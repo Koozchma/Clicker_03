@@ -1,55 +1,60 @@
 // js/gameData.js
 const gameData = {
     // Core Resources
-    currentEnergy: 10, // Start with a little raw energy
-    rawEnergyPerClick: 1, // Base energy from manual siphoning
-    ambientEnergySiphonRate: 0.01, // Base passive % increase of currentEnergy, e.g., 0.01 = 1% per second
+    currentEnergy: 25, // Start with a bit more energy for initial actions
+    rawEnergyPerClick: 1,
+    ambientEnergySiphonRate: 0.005, // Reduced base rate, e.g., 0.5%
 
     material: 0,
-    researchData: 0, // Renamed from 'research'
+    researchData: 0,
     credits: 0,
 
     // Clicking & Manual Siphoning
-    clickPower: 1, // Effective energy per click (can be upgraded)
+    clickPower: 1,
     totalClicks: 0,
     promotionLevel: 0,
     promotionBaseBonus: 1,
 
-    // Production & Upkeep Rates (calculated each tick)
+    // Manual Conversion Settings (Phase 2, Step 4)
+    manualConversion: {
+        material: { energyCost: 10, materialYield: 1 },
+        research: { energyCost: 15, researchDataYield: 1 }
+    },
+
+    // Production & Upkeep Rates
     productionRates: {
-        energyFromHarvesters: 0, // Energy from dedicated harvester buildings
-        energyFromAmbientSiphon: 0, // Energy from the base passive % gain
+        energyFromHarvesters: 0,
+        energyFromAmbientSiphon: 0,
         material: 0,
         researchData: 0,
         credits: 0,
     },
-    upkeepRates: { // Energy consumed by converters & other systems
+    upkeepRates: {
         energyForConverters: 0,
-        energyForOtherSystems: 0, // For future use
-        creditsForMaintenance: 0, // For future use
-        // Material upkeep is usually for specific building *actions* rather than passive, handled by consumption logic
+        energyForOtherSystems: 0,
+        creditsForMaintenance: 0,
     },
-    consumptionRates: { // Resources consumed to produce others (e.g. energy by converters)
+    consumptionRates: {
         energyByMaterialConverters: 0,
         energyByResearchEmulators: 0,
         energyByCreditSynthesizers: 0,
     },
 
-
     // Game State
     lastTick: Date.now(),
     gameSettings: {
         tickRate: 1000,
-        clicksForPromotion: 10,
+        clicksForPromotion: 10, // Promotions per 10 "Siphon Energy" clicks
     },
 
-    ownedBuildings: {}, // Will store counts of Harvesters and Converters
+    ownedBuildings: {},
     unlockedScience: {},
     buildingCostModifier: 1,
-    // Add new fields for special projects or global states if needed
 };
 
-// Renamed for clarity, previously getVaultGrowthFactor
 function getAmbientSiphonFactor() {
-    return 1 + (gameData.ambientEnergySiphonRate); // If 0.01, it's 1 + 0.01 = 1.01
+    return 1 + (gameData.ambientEnergySiphonRate);
 }
+
+// Log to confirm script is loaded
+console.log("gameData.js loaded.");
