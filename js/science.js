@@ -1,18 +1,37 @@
 // js/science.js
 
 const scienceTree = {
-    // TIER 0 - Initial Unlocks
-    'sci_unlock_converters': {
-        id: 'sci_unlock_converters',
-        name: 'Basic Conversion Schematics',
-        description: 'Decipher fundamental blueprints to construct Tier 1 Energy Converters and basic Energy Relays.',
-        cost: { researchData: 3, energy: 50, material: 0, credits: 0 }, // Slightly reduced RData cost
+    // TIER 0 - Initial Unlocks (Now focusing on unlocking Harvesters & advanced Converters)
+    'sci_unlock_energy_harvesters': { // NEW: Unlocks the first automated Energy Harvester
+        id: 'sci_unlock_energy_harvesters',
+        name: 'Basic Energy Siphoning Tech',
+        description: 'Develop the understanding to construct Micro-Siphon Relays for automated Energy collection.',
+        cost: { researchData: 5, energy: 75, material: 10, credits: 0 }, // Requires some manually made resources
         effects: function() {
-            console.log("Basic Conversion Schematics deciphered. Tier 1 Converters & Relays accessible.");
+            console.log("Basic Energy Siphoning Tech researched. Micro-Siphon Relays constructible.");
         },
-        prerequisites: [],
+        prerequisites: [], // Can be researched after getting some manual RData
         tier: 0,
     },
+    'sci_unlock_research_converters': { // Unlocks T1 Research Converter
+        id: 'sci_unlock_research_converters',
+        name: 'Advanced Emulation Protocols',
+        description: 'Unlocks the Data Stream Emulator for more efficient Research Data generation.',
+        cost: { researchData: 15, energy: 100, material: 25 },
+        effects: function() {},
+        prerequisites: [], // Could also require 'sci_unlock_energy_harvesters'
+        tier: 0,
+    },
+    'sci_unlock_banking_converters': { // Unlocks T1 Banking Converter
+        id: 'sci_unlock_banking_converters',
+        name: 'Value Crystallization Theory',
+        description: 'Unlocks the Value Refinery for automated Credit synthesis.',
+        cost: { researchData: 20, energy: 120, material: 30 },
+        effects: function() {},
+        prerequisites: [], // Could also require 'sci_unlock_energy_harvesters'
+        tier: 0,
+    },
+
 
     // TIER 1
     'sci_siphon_attunement_1': {
@@ -25,7 +44,7 @@ const scienceTree = {
             gameData.clickPower = gameData.rawEnergyPerClick + (gameData.promotionLevel * gameData.promotionBaseBonus);
             console.log("Siphon Attunement I achieved. New base siphon strength: " + gameData.rawEnergyPerClick);
         },
-        prerequisites: ['sci_unlock_converters'],
+        prerequisites: [], // Make this an early, independent research
         tier: 1,
     },
     'sci_stellar_harnessing': {
@@ -34,7 +53,7 @@ const scienceTree = {
         description: 'Unlock the technology for Stellar Radiation Collectors, significantly boosting passive Energy generation.',
         cost: { researchData: 25, material: 50, energy: 150 },
         effects: function() { /* Unlocks 'stellarCollector' building */ },
-        prerequisites: ['sci_unlock_converters'],
+        prerequisites: ['sci_unlock_energy_harvesters'], // Requires the basic harvester tech
         tier: 1,
     },
     'sci_advanced_material_conversion': {
@@ -43,11 +62,13 @@ const scienceTree = {
         description: 'Develop schematics for the Industrial Fabricator, a more efficient Material Converter.',
         cost: { researchData: 40, material: 100, energy: 200 },
         effects: function() { /* Unlocks 'industrialFabricator' building */ },
-        prerequisites: ['sci_unlock_converters'],
+        prerequisites: [], // Can be researched once RData flows
         tier: 1,
     },
 };
 
+// --- canAffordScience, researchTech, getAdjustedBuildingCost functions remain the same ---
+// Ensure they are present and correct as in 'science_js_Aethel_unlock_converters' artifact.
 function canAffordScience(scienceId) {
     if (typeof scienceTree === 'undefined' || !scienceTree[scienceId]) {
         console.warn(`canAffordScience: Science tech not found for ID: ${scienceId}`);
