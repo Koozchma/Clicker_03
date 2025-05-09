@@ -7,14 +7,19 @@ function gameTick() {
     // --- Passive Energy from Vault ---
     // Energy vault: always increase by a factor of 1.01 per second (or gameData.vaultMultiplierPercent).
     // This means currentEnergy * (vaultMultiplierPercent / 100) is ADDED each second.
-    if (gameData.currentEnergy > 0) { // Only generate if there's energy to multiply
-        const vaultFactor = getVaultGrowthFactor(); // e.g., 1.001 if percent is 0.1
+    if (gameData.currentEnergy > 0) { // This check is good
+        const vaultFactor = getVaultGrowthFactor(); // Ensure getVaultGrowthFactor() returns a valid number
+        // Ensure gameData.currentEnergy is a number BEFORE this multiplication
         const energyFromVaultThisTick = gameData.currentEnergy * (vaultFactor - 1);
-        gameData.currentEnergy += energyFromVaultThisTick;
-        // The 'productionRates.energy' will store this vault generation for display
-        gameData.productionRates.energy = energyFromVaultThisTick; // This is per-second rate
+        if (!isNaN(energyFromVaultThisTick)) { // Add a check
+            gameData.currentEnergy += energyFromVaultThisTick;
+            gameData.productionRates.energyFromVault = energyFromVaultThisTick;
+        } else {
+            gameData.productionRates.energyFromVault = 0; // Prevent NaN propagation
+            // console.error("NaN detected in energyFromVaultThisTick", gameData.currentEnergy, vaultFactor);
+        }
     } else {
-        gameData.productionRates.energy = 0;
+        gameData.productionRates.energyFromVault = 0;
     }
 
 
