@@ -293,3 +293,20 @@ footer {
         transform: translateY(0);
     }
 }
+
+/* NEW STYLES FOR TOP ROW LAYOUT */
+.top-row-layout {
+    display: flex;
+    flex-direction: row; /* Arrange children in a row */
+    justify-content: space-between; /* Or space-around, or use gap */
+    align-items: flex-start; /* Align items to the top of the row */
+    gap: 30px; /* Space between the two sections */
+    width: 100%; /* Make the layout container take full width */
+    margin-bottom: 30px; /* Space below this row before the next sections */
+}
+
+.top-row-layout > section {
+    flex-grow: 1; /* Allow sections to grow */
+    flex-basis: 0; /* Distribute space evenly initially, or set specific basis */
+    margin-bottom: 0; /* Remove bottom margin from sections inside this flex container as gap handles it */
+}
