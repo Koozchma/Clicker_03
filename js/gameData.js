@@ -1,9 +1,9 @@
 // js/gameData.js
 const gameData = {
     // Core Resources
-    currentEnergy: 25, // Start with a bit more energy for initial actions
+    currentEnergy: 25, 
     rawEnergyPerClick: 1,
-    ambientEnergySiphonRate: 0.005, // Reduced base rate, e.g., 0.5%
+    ambientEnergySiphonRate: 0.01, // CHANGED: Now 1% for ambient siphon
 
     material: 0,
     researchData: 0,
@@ -15,7 +15,7 @@ const gameData = {
     promotionLevel: 0,
     promotionBaseBonus: 1,
 
-    // Manual Conversion Settings (Phase 2, Step 4)
+    // Manual Conversion Settings
     manualConversion: {
         material: { energyCost: 10, materialYield: 1 },
         research: { energyCost: 15, researchDataYield: 1 }
@@ -44,7 +44,7 @@ const gameData = {
     lastTick: Date.now(),
     gameSettings: {
         tickRate: 1000,
-        clicksForPromotion: 10, // Promotions per 10 "Siphon Energy" clicks
+        clicksForPromotion: 10,
     },
 
     ownedBuildings: {},
@@ -53,8 +53,9 @@ const gameData = {
 };
 
 function getAmbientSiphonFactor() {
-    return 1 + (gameData.ambientEnergySiphonRate);
+    // This factor is (1 + rate), so if rate is 0.01, factor is 1.01
+    return 1 + (gameData.ambientEnergySiphonRate); 
 }
 
 // Log to confirm script is loaded
-console.log("gameData.js loaded.");
+console.log("gameData.js loaded. Ambient Siphon Rate: " + (gameData.ambientEnergySiphonRate * 100) + "%");
