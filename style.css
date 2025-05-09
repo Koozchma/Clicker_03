@@ -1,22 +1,29 @@
 /* style.css */
 :root {
-    --color-bg-deep-blue: #1a2238;
-    --color-bg-charcoal: #23272a;
-    --color-bg-black: #0d0d0d;
-    --color-text-light: #e0e0e0;
-    --color-text-secondary: #9da5b3;
+    --color-bg-deep-blue: #10141f; /* Slightly darker blue */
+    --color-bg-charcoal: #1c1f26;   /* Darker charcoal for cards */
+    --color-bg-black: #0a0c10;     /* True black */
+    --color-text-light: #e8eaf6;   /* Softer white */
+    --color-text-secondary: #a0a8c0; /* Muted secondary text */
 
-    --color-accent-cyan: #00ffff;
-    --color-accent-green: #66ff99;
-    --color-accent-purple: #9370db;
-    --color-accent-orange-glow: #ff8c00;
-    --color-accent-red-glow: #ff4d4d;
+    --color-accent-cyan: #00e5ff;       /* Vibrant cyan */
+    --color-accent-green: #4caf50;      /* Material Design Green - good for positive */
+    --color-accent-purple: #7e57c2;     /* Softer, sophisticated purple */
+    --color-accent-orange-glow: #ff9800; /* Material Design Orange */
+    --color-accent-red-glow: #f44336;   /* Material Design Red */
 
-    --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    --card-bg: rgba(35, 39, 42, 0.75); 
-    --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-    --border-radius-main: 8px;
+    --font-primary: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Roboto for a modern feel */
+    --font-numeric: 'Roboto Mono', Consolas, monospace; /* For numbers */
+    
+    --card-bg: var(--color-bg-charcoal); 
+    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Softer, more pronounced shadow */
+    --card-border: 1px solid rgba(0, 229, 255, 0.1); /* Subtle cyan border for cards */
+    --border-radius-main: 10px; /* Slightly larger radius */
 }
+
+/* Import Roboto and Roboto Mono from Google Fonts */
+@import url('[https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap](https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap)');
+
 
 body {
     font-family: var(--font-primary);
@@ -28,28 +35,31 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    font-size: 16px;
-    line-height: 1.6;
+    font-size: 15px; /* Base font size adjustment */
+    line-height: 1.65;
+    font-weight: 400; /* Default to normal weight */
 }
 
 .container {
     width: 95%;
-    max-width: 1400px;
+    max-width: 1300px; /* Slightly reduced max-width for better focus */
     padding: 0;
 }
 
 header {
     width: 100%;
     text-align: center;
-    padding: 20px 0;
-    margin-bottom: 30px;
+    padding: 25px 0; /* Increased padding */
+    margin-bottom: 35px; /* Increased margin */
 }
 
 header h1 {
     color: var(--color-accent-cyan);
-    font-size: 2.5em;
+    font-size: 2.8em; /* Slightly larger */
+    font-weight: 300; /* Lighter weight for a sleek title */
     margin: 0;
-    text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.4), 0 0 20px rgba(0, 229, 255, 0.2); /* Enhanced glow */
+    letter-spacing: 1px;
 }
 
 .top-row-layout {
@@ -57,92 +67,106 @@ header h1 {
     flex-direction: row; 
     gap: 30px; 
     width: 100%;
-    margin-bottom: 30px; 
+    margin-bottom: 35px; 
 }
 
 .top-row-layout > section {
     flex-grow: 1;
     flex-basis: 0; 
 }
+.top-row-layout #resource-display {
+    flex-grow: 3; /* Give more space to resources */
+}
+.top-row-layout #interaction-area {
+    flex-grow: 2; /* Less space for operations */
+}
 
-/* REMOVED .game-sections-wrapper as it's replaced by category navigation */
 
 section {
     background-color: var(--card-bg);
-    padding: 25px 30px;
+    padding: 20px 25px; /* Adjusted padding */
     border-radius: var(--border-radius-main);
     box-shadow: var(--card-shadow);
+    border: var(--card-border); /* Added subtle border */
     transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
-    margin-bottom: 30px; 
+    margin-bottom: 35px; 
 }
 
-.top-row-layout > section { /* Sections within top-row already have gap, no extra margin-bottom */
+.top-row-layout > section {
     margin-bottom: 0;
 }
 
 
 h2 {
     color: var(--color-accent-green);
-    border-bottom: 1px solid var(--color-accent-green);
-    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(76, 175, 80, 0.4); /* Softer border color */
+    padding-bottom: 12px; /* Increased padding */
     margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.8em;
-    text-shadow: 0 0 5px rgba(102, 255, 153, 0.2);
+    margin-bottom: 25px; /* Increased margin */
+    font-size: 1.6em; /* Adjusted size */
+    font-weight: 500; /* Medium weight */
+    text-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
+    letter-spacing: 0.5px;
 }
 
-/* Resource Display Styling - (Keep existing styles for .resource, .label, .current-value etc.) */
+/* Resource Display Styling */
 .resource {
-    margin-bottom: 15px;
-    font-size: 1.1em;
+    margin-bottom: 12px; /* Slightly reduced margin */
+    font-size: 1.05em; /* Adjusted size */
     display: flex;
-    flex-wrap: wrap; 
+    flex-wrap: nowrap; /* Prevent wrapping within a single resource line */
     align-items: baseline; 
+    white-space: nowrap; /* Keep elements on one line */
 }
 
 .resource .label { 
-    font-weight: bold;
+    font-weight: 500; /* Medium weight */
     color: var(--color-accent-cyan);
-    margin-right: 8px;
+    margin-right: 10px; /* Increased margin */
     flex-shrink: 0; 
+    width: 110px; /* Fixed width for labels for alignment */
+    text-align: left;
 }
 
 .resource .current-value { 
-    font-weight: bold;
+    font-weight: 700; /* Bold */
     color: var(--color-text-light);
     margin-right: 10px;
-    min-width: 70px; 
+    min-width: 80px; /* Adjusted min-width */
     display: inline-block;
     text-align: right;
     flex-shrink: 0;
+    font-family: var(--font-numeric);
 }
 
 .resource .separator {
     color: var(--color-text-secondary);
-    margin: 0 8px; 
+    opacity: 0.6; /* Softer separator */
+    margin: 0 6px; 
     flex-shrink: 0;
 }
 
 .resource .net-change {
     color: var(--color-accent-green); 
-    font-weight: bold;
-    margin-right: 0px; 
-    min-width: 80px; 
+    font-weight: 700; /* Bold */
+    margin-right: 3px; 
+    min-width: 75px; /* Adjusted min-width */
     display: inline-block;
     text-align: right;
     flex-shrink: 0;
+    font-family: var(--font-numeric);
 }
 .resource .net-change.negative-value { 
     color: var(--color-accent-red-glow);
 }
 
 
-.resource span[id$="ProductionRate"],
-.resource span[id$="UpkeepRate"] {
+.resource .rate-value { /* New class for production/upkeep rate numbers */
     color: var(--color-text-secondary);
-    min-width: 60px; 
+    min-width: 55px; /* Adjusted min-width */
     display: inline-block;
     text-align: right;
+    font-family: var(--font-numeric);
 }
 
 .resource .details-group {
@@ -151,165 +175,197 @@ h2 {
     display: inline-flex; 
     align-items: baseline;
     flex-shrink: 0;
+    font-family: var(--font-numeric); /* Apply to the whole group for consistency */
 }
 .resource .details-group .separator-dash {
-    margin: 0 3px; 
+    margin: 0 4px; 
+    opacity: 0.6;
 }
 
 .resource .unit-label {
     color: var(--color-text-secondary);
-    margin-left: 3px; 
-    font-size: 0.9em;
+    margin-left: 4px; 
+    font-size: 0.85em; /* Smaller unit labels */
+    opacity: 0.8;
     flex-shrink: 0;
 }
 
-/* Interaction Area Styling - (Keep existing styles) */
+/* Interaction Area Styling */
+#interaction-area {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+}
 #interaction-area button#mineEnergyButton {
     background-color: var(--color-accent-cyan);
     color: var(--color-bg-black);
     border: none;
-    padding: 12px 25px;
+    padding: 12px 20px; /* Adjusted padding */
     text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 1.1em;
-    font-weight: bold;
-    margin: 10px 0;
+    font-size: 1.05em; /* Adjusted size */
+    font-weight: 700; /* Bold */
+    margin: 10px auto; /* Center button if it's not full width */
     cursor: pointer;
     border-radius: var(--border-radius-main);
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0, 255, 255, 0.2);
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 5px 15px rgba(0, 229, 255, 0.25);
+    min-width: 220px; /* Give it a decent minimum width */
 }
 
 #interaction-area button#mineEnergyButton:hover:not(:disabled) {
     background-color: #33ffff; 
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 255, 255, 0.3);
+    transform: translateY(-2px) scale(1.02); /* Slight lift and scale */
+    box-shadow: 0 7px 20px rgba(0, 229, 255, 0.35);
 }
 
 #interaction-area button#mineEnergyButton:disabled {
-    background-color: #555; 
-    color: #888;
+    background-color: #404652; /* Darker disabled */
+    color: #788296;
     cursor: not-allowed;
     box-shadow: none;
     transform: translateY(0);
 }
 
-#interaction-area p {
+#interaction-area .interaction-details {
+    text-align: center; /* Center the siphon details */
+}
+#interaction-area .interaction-details p {
     color: var(--color-text-secondary);
-    margin-top: 8px;
-    margin-bottom: 8px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    font-size: 0.9em;
 }
-#interaction-area p:last-of-type {
-    margin-bottom: 15px; 
-}
-
 
 #interaction-area .operations-divider {
     border: 0;
     height: 1px;
-    background-image: linear-gradient(to right, rgba(0, 255, 255, 0), rgba(0, 255, 255, 0.5), rgba(0, 255, 255, 0));
-    margin: 20px 0;
+    background-image: linear-gradient(to right, rgba(0, 229, 255, 0), rgba(0, 229, 255, 0.3), rgba(0, 229, 255, 0)); /* Softer gradient */
+    margin: 15px 0;
+}
+
+#interaction-area .manual-conversion-title strong { 
+    color: var(--color-accent-cyan);
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 8px; /* Increased margin */
+    text-align: center;
+    font-weight: 500;
+}
+#interaction-area .manual-conversion-buttons {
+    display: flex;
+    justify-content: center; /* Center buttons */
+    gap: 10px; /* Space between manual conversion buttons */
+    flex-wrap: wrap; /* Allow wrapping if needed */
 }
 
 #interaction-area .manual-action-button {
     background-color: var(--color-accent-purple); 
     color: var(--color-text-light);
     border: none;
-    padding: 10px 15px;
-    text-align: center;
-    font-size: 0.95em;
-    margin: 5px;
+    padding: 10px 18px; /* Adjusted padding */
+    font-size: 0.9em; /* Adjusted size */
+    font-weight: 500;
+    margin: 5px 0; /* Remove horizontal margin, gap handles it */
     cursor: pointer;
-    border-radius: calc(var(--border-radius-main) - 4px);
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    box-shadow: 0 3px 8px rgba(147, 112, 219, 0.2);
+    border-radius: calc(var(--border-radius-main) - 2px); /* Slightly smaller radius */
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(126, 87, 194, 0.25);
 }
 
 #interaction-area .manual-action-button:hover:not(:disabled) {
-    background-color: #ab82ff; 
-    transform: translateY(-1px);
-    box-shadow: 0 5px 12px rgba(147, 112, 219, 0.3);
+    background-color: #9575cd; /* Lighter purple (Material Design Indigo 300) */
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 6px 16px rgba(126, 87, 194, 0.35);
 }
 
 #interaction-area .manual-action-button:disabled {
-    background-color: #4a4a52;
-    color: #787887;
+    background-color: #39324b; /* Darker, muted purple */
+    color: #797091;
     cursor: not-allowed;
     box-shadow: none;
     transform: translateY(0);
 }
 
-#interaction-area p strong { 
-    color: var(--color-accent-cyan);
-    display: block;
-    margin-top: 10px;
-    margin-bottom: 5px;
-}
-
-/* NEW STYLES for Category Navigation and Content Area */
+/* Category Navigation and Content Area */
 .category-navigation {
     display: flex;
-    justify-content: center; /* Center the buttons */
-    gap: 15px; /* Space between navigation buttons */
-    margin-bottom: 30px;
+    justify-content: center; 
+    gap: 20px; /* Increased gap */
+    margin-bottom: 35px; /* Increased margin */
     width: 100%;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.15); /* Subtle line below nav */
+    padding-bottom: 20px; /* Space above the line */
 }
 
 .category-nav-button {
-    padding: 10px 20px;
-    font-size: 1.1em;
-    font-weight: bold;
-    color: var(--color-text-light);
-    background-color: var(--color-accent-purple); /* Default nav button color */
-    border: none;
+    padding: 12px 25px; /* Increased padding */
+    font-size: 1.05em; /* Adjusted size */
+    font-weight: 500; /* Medium weight */
+    color: var(--color-text-secondary); /* Default state is secondary */
+    background-color: transparent; /* Transparent background by default */
+    border: 2px solid transparent; /* Placeholder for border transition */
     border-radius: var(--border-radius-main);
     cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 10px rgba(147, 112, 219, 0.2);
+    transition: all 0.25s ease-in-out;
+    /* box-shadow: 0 4px 10px rgba(126, 87, 194, 0.2); */ /* Removed default shadow for cleaner look */
 }
 
 .category-nav-button:hover:not(.active) {
-    background-color: #ab82ff; /* Lighter purple on hover */
-    transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba(147, 112, 219, 0.3);
+    color: var(--color-text-light);
+    border-color: var(--color-accent-purple); /* Purple border on hover */
+    background-color: rgba(126, 87, 194, 0.1); /* Very subtle purple bg */
+    transform: translateY(-2px);
 }
 
-.category-nav-button.active { /* Style for the currently active button */
-    background-color: var(--color-accent-green); /* Active button is green */
+.category-nav-button.active { 
+    background-color: var(--color-accent-green); 
     color: var(--color-bg-black);
-    box-shadow: 0 2px 5px rgba(102, 255, 153, 0.4) inset, 0 4px 10px rgba(102, 255, 153, 0.3);
-    transform: translateY(1px); /* Slight press effect */
+    border-color: var(--color-accent-green);
+    /* box-shadow: 0 2px 5px rgba(76, 175, 80, 0.4) inset, 0 4px 10px rgba(76, 175, 80, 0.3); */
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.5), 0 0 5px rgba(76, 175, 80, 0.3) inset; /* Glow effect */
+    transform: translateY(0px); 
 }
 
 #category-content-area {
-    /* This section will now hold the dynamic content */
-    /* It inherits general section styling (card-bg, padding, etc.) */
-    width: 100%; /* Ensure it takes full width */
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    width: 100%; 
+    box-sizing: border-box; 
+    border: var(--card-border); /* Use the same subtle border as other cards */
+    background-color: var(--card-bg); /* Ensure it has the card background */
 }
 
-#category-content-area h2 { /* The title within this dynamic area */
-    color: var(--color-accent-cyan); /* Cyan for the dynamic title */
-    border-bottom-color: var(--color-accent-cyan);
+#category-content-area h2 { 
+    color: var(--color-accent-cyan); 
+    border-bottom-color: rgba(0, 229, 255, 0.4); /* Softer cyan border */
+    font-weight: 500;
 }
 
 #categoryListContainer {
-    /* This div will hold the actual lists of buildings, research, etc. */
-    /* Styles for .building-item and .science-item will apply to its children */
+    min-height: 150px; /* Give it some min height so the card doesn't collapse when empty */
+    padding-top: 10px; /* Space above list items if title is present */
+}
+#categoryListContainer > p { /* Placeholder text styling */
+    text-align: center;
+    font-style: italic;
+    color: var(--color-text-secondary);
+    opacity: 0.7;
+    padding: 20px;
 }
 
 
-/* Building and Science Item Styling (Keep existing styles) */
+/* Building and Science Item Styling */
 .building-item, .science-item {
-    background-color: rgba(44, 50, 60, 0.85);
-    padding: 15px 20px;
-    margin-bottom: 15px; 
-    border-radius: calc(var(--border-radius-main) - 2px);
-    border-left: 4px solid var(--color-accent-purple);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    transition: border-left-color 0.3s ease;
+    background-color: rgba(28, 31, 38, 0.85); /* Darker item background for contrast */
+    padding: 18px 22px; /* Adjusted padding */
+    margin-bottom: 18px; 
+    border-radius: calc(var(--border-radius-main) - 3px); /* Slightly less rounded */
+    border-left: 5px solid var(--color-accent-purple); /* Thicker accent border */
+    box-shadow: 0 5px 12px rgba(0,0,0,0.25); /* Slightly stronger shadow */
+    transition: border-left-color 0.3s ease, transform 0.2s ease;
 }
+.building-item:hover, .science-item:hover:not(.is-unlocked) {
+    transform: translateX(5px); /* Slight shift on hover */
+    border-left-color: var(--color-accent-cyan);
+}
+
 .building-item:last-child, .science-item:last-child {
     margin-bottom: 0; 
 }
@@ -317,36 +373,44 @@ h2 {
 
 .science-item.is-unlocked { 
     border-left-color: var(--color-accent-green) !important; 
-    opacity: 0.7; 
+    opacity: 0.6; /* More faded when unlocked */
+}
+.science-item.is-unlocked:hover {
+    transform: translateX(0); /* No hover shift for unlocked items */
+    border-left-color: var(--color-accent-green) !important;
 }
 .science-item.is-unlocked h3 {
     text-decoration: line-through;
     text-decoration-color: var(--color-accent-green);
+    opacity: 0.7;
 }
 
 
 .building-item h3, .science-item h3 {
     margin-top: 0;
-    margin-bottom: 8px;
+    margin-bottom: 10px; /* Increased margin */
     color: var(--color-text-light);
-    font-size: 1.2em;
+    font-size: 1.15em; /* Adjusted size */
+    font-weight: 500;
 }
 
 .building-item p, .science-item p {
-    margin: 5px 0;
-    font-size: 0.95em;
+    margin: 6px 0; /* Adjusted margin */
+    font-size: 0.9em; /* Adjusted size */
     color: var(--color-text-secondary);
+    line-height: 1.5;
 }
 .science-item p.cost-line { 
     color: var(--color-accent-cyan);
+    font-weight: 500;
 }
 .science-item p.prereq-line span.met { 
     color: var(--color-accent-green);
-    font-weight: bold;
+    font-weight: 500; /* Less bold */
 }
 .science-item p.prereq-line span.unmet { 
     color: var(--color-accent-red-glow);
-    font-weight: bold;
+    font-weight: 500; /* Less bold */
 }
 
 
@@ -354,25 +418,25 @@ h2 {
     background-color: var(--color-accent-purple);
     color: var(--color-text-light);
     border: none;
-    padding: 8px 15px;
-    font-size: 0.9em;
-    font-weight: bold;
+    padding: 9px 16px; /* Adjusted padding */
+    font-size: 0.85em; /* Adjusted size */
+    font-weight: 500; /* Medium weight */
     border-radius: calc(var(--border-radius-main) - 4px);
     cursor: pointer;
-    margin-top: 10px;
-    transition: background-color 0.2s ease, transform 0.2s ease;
+    margin-top: 12px; /* Increased margin */
+    transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 .building-item button:hover:not(:disabled),
 .science-item button:hover:not(:disabled) {
-    background-color: #ab82ff; 
-    transform: translateY(-1px);
+    background-color: #9575cd; 
+    transform: translateY(-1px) scale(1.02);
 }
 
 .building-item button:disabled,
 .science-item button:disabled {
-    background-color: #4a4a52; 
-    color: #787887;
+    background-color: #39324b; 
+    color: #797091;
     cursor: not-allowed;
     transform: translateY(0);
 }
@@ -381,11 +445,12 @@ h2 {
 footer {
     width: 100%;
     text-align: center;
-    margin-top: 40px;
-    padding: 20px 0;
-    font-size: 0.9em;
+    margin-top: 50px; /* Increased margin */
+    padding: 25px 0; /* Increased padding */
+    font-size: 0.85em; /* Adjusted size */
     color: var(--color-text-secondary);
-    border-top: 1px solid rgba(157, 165, 179, 0.2);
+    opacity: 0.7; /* Softer footer */
+    border-top: 1px solid rgba(160, 168, 192, 0.15); /* Softer border */
 }
 
 .slide-in {
@@ -419,15 +484,26 @@ footer {
     }
 }
 
-@media (max-width: 768px) { /* Stack category buttons on smaller screens */
+@media (max-width: 768px) { 
     .category-navigation {
         flex-direction: column;
-        align-items: stretch; /* Make buttons full width */
+        align-items: stretch; 
     }
     .category-nav-button {
-        margin-bottom: 10px; /* Add space when stacked */
+        margin-bottom: 10px; 
     }
     .category-nav-button:last-child {
         margin-bottom: 0;
+    }
+
+    .resource { /* Allow resource details to wrap more aggressively */
+        flex-wrap: wrap;
+    }
+    .resource .label {
+        width: auto; /* Allow label to shrink if needed */
+        margin-bottom: 5px; /* Space below label when wrapped */
+    }
+    .resource .current-value, .resource .net-change, .resource .details-group {
+        margin-left: 0; /* Reset left margin when wrapped */
     }
 }
