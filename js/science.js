@@ -1,95 +1,56 @@
 // js/science.js
 const scienceTree = {
-    // Tier 0 - Basic Unlocks
-    'sci_basic_material_scaffolding': {
-        id: 'sci_basic_material_scaffolding',
-        name: 'Basic Material Scaffolding',
-        description: 'Unlocks the Scrap Collector to gather materials.',
-        cost: { research: 10, energy: 50 },
-        effects: function() { /* Unlocks building - handled by checking science ID in building def */ },
-        prerequisites: [],
+    // TIER 0 - Initial Unlocks (Focus on Energy Costs)
+    'sci_basic_emulation': { // Unlocks the first research building
+        id: 'sci_basic_emulation',
+        name: 'Basic Data Emulation',
+        description: 'Unlock the Data Stream Emulator to begin generating Research Data.',
+        // COST CHANGE: Only energy for this first critical research step.
+        cost: { researchData: 0, energy: 75, material: 0, credits: 0 }, // Was: research: 10 (now researchData)
+        effects: function() { /* Unlocks 'dataStreamEmulator' - handled by building def */ },
+        prerequisites: [], // No prerequisites for the very first one
         tier: 0,
     },
-    'sci_rudimentary_credit_system': {
-        id: 'sci_rudimentary_credit_system',
-        name: 'Rudimentary Credit System',
-        description: 'Unlocks the Market Stall to generate Credits by selling surplus Energy.',
-        cost: { research: 20, energy: 75 },
-        effects: function() { /* Unlocks building */ },
-        prerequisites: [],
-        tier: 0,
-    },
-    'sci_early_research_methods': {
-        id: 'sci_early_research_methods',
-        name: 'Early Research Methods',
-        description: 'Unlocks the Basic Lab to start generating Research points.',
-        cost: { research: 5, energy: 100 }, // Making this cheap to kickstart research itself
-        effects: function() { /* Unlocks building, ID: basicLab */ },
-        prerequisites: [],
-        tier: 0,
-    },
-
-    // Tier 1 - Clicking & Efficiency
-    'sci_click_efficiency_1': {
-        id: 'sci_click_efficiency_1',
-        name: 'Ergonomic Clicker Design',
-        description: 'Increases energy per click by 1.',
-        cost: { research: 50, material: 20 },
-        effects: function() { gameData.clickPower += 1; },
-        prerequisites: ['sci_early_research_methods'],
+    'sci_stellar_harnessing': { // Unlocks a better energy harvester
+        id: 'sci_stellar_harnessing',
+        name: 'Stellar Harnessing Principles',
+        description: 'Allows construction of Stellar Radiation Collectors for improved Energy generation.',
+        // COST: This can cost Research Data and Material, as it's a step up.
+        cost: { researchData: 25, material: 50, energy: 100 },
+        effects: function() { /* Unlocks 'stellarCollector' */ },
+        prerequisites: ['sci_basic_emulation'], // Requires you to be able to research first
         tier: 1,
     },
-    'sci_vault_optimization_1': {
-        id: 'sci_vault_optimization_1',
-        name: 'Vault Optimization I',
-        description: 'Increases Energy Vault passive generation by 0.05%.',
-        cost: { research: 100, energy: 500 },
-        effects: function() { gameData.vaultMultiplierPercent += 0.05; },
-        prerequisites: ['sci_early_research_methods'],
+    'sci_advanced_material_conversion': {
+        id: 'sci_advanced_material_conversion',
+        name: 'Advanced Material Conversion',
+        description: 'Unlocks the Industrial Fabricator for more efficient Material production.',
+        cost: { researchData: 40, material: 100, energy: 200 },
+        effects: function() { /* Unlocks 'industrialFabricator' */ },
+        prerequisites: ['sci_basic_emulation'],
         tier: 1,
     },
-    'sci_building_cost_reduction_1': {
-        id: 'sci_building_cost_reduction_1',
-        name: 'Resource Efficiency I',
-        description: 'Reduces Energy and Material cost of all buildings by 5%. (Effect applied dynamically)',
-        cost: { research: 75, material: 50 },
-        effects: function() { /* Store this as a global modifier */ gameData.buildingCostModifier = (gameData.buildingCostModifier || 1) * 0.95; },
-        prerequisites: ['sci_basic_material_scaffolding'],
+    'sci_credit_synthesis': {
+        id: 'sci_credit_synthesis',
+        name: 'Credit Synthesis Theory',
+        description: 'Enables the construction of Value Refineries to produce Credits.',
+        cost: { researchData: 30, material: 75, energy: 150 },
+        effects: function() { /* Unlocks 'valueRefinery' */ },
+        prerequisites: ['sci_basic_emulation'],
         tier: 1,
     },
 
-    // Tier 1 - Building Unlocks
-    'sci_material_processing_1': {
-        id: 'sci_material_processing_1',
-        name: 'Advanced Material Processing',
-        description: 'Unlocks the Automated Mine for increased material production.',
-        cost: { research: 150, material: 100, energy: 300 },
-        effects: function() { /* Unlocks building automatedMine */ },
-        prerequisites: ['sci_basic_material_scaffolding'],
-        tier: 1,
+    // Add Clicking Upgrades that cost Energy or early resources
+    'sci_siphon_attunement_1': {
+        id: 'sci_siphon_attunement_1',
+        name: 'Siphon Attunement I',
+        description: 'Enhances manual energy siphoning by +1 Energy per click.',
+        cost: { researchData: 10, energy: 100 }, // Requires some research data first
+        effects: function() { gameData.rawEnergyPerClick += 1; gameData.clickPower = gameData.rawEnergyPerClick; }, // Update both base and current
+        prerequisites: ['sci_basic_emulation'],
+        tier: 0, // Could be an early utility upgrade
     },
-    'sci_commerce_1': {
-        id: 'sci_commerce_1',
-        name: 'Organized Commerce',
-        description: 'Unlocks the Trade Depot for converting materials to credits.',
-        cost: { research: 120, credits: 500, energy: 200 },
-        effects: function() { /* Unlocks building tradeDepot */ },
-        prerequisites: ['sci_rudimentary_credit_system'],
-        tier: 1,
-    },
-    'sci_research_methods_2': {
-        id: 'sci_research_methods_2',
-        name: 'Dedicated Research Facility',
-        description: 'Unlocks the Research Complex for faster research progress.',
-        cost: { research: 200, material: 250, credits: 1000 },
-        effects: function() { /* Unlocks building researchComplex */ },
-        prerequisites: ['sci_early_research_methods', 'sci_material_processing_1'], // Example dependency
-        tier: 1,
-    },
-    // Add more science items:
-    // (b) unlock clicking upgrades (e.g., "Resonance Amplifiers": clicks give +0.1 research)
-    // (c) lower costs (e.g., "Streamlined Logistics": -10% energy upkeep for all buildings)
-    // (d) provide efficiency (e.g., "Material Compaction": +10% material output from material buildings)
+    // ... more science items ...
 };
 
 function canAffordScience(scienceId) {
