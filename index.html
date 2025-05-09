@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Energy Clicker</title>
+    <title>Aethel: Conduit of Creation</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,83 +17,98 @@
                 <h2>System Resources</h2>
                 <div class="resource">
                     <span class="label">Energy:</span>
-                    <span class="current-value" id="currentEnergy">0</span>
-                    <span class="separator">|</span>
-                    <span class="net-change" id="energyNetChange">0.00</span><span class="unit-label">e/sec</span>
-                    <span class="separator">|</span>
-                    <span class="details-group">
-                        (<span id="energyProductionRate">0.00</span>
-                        <span class="separator-dash">-</span>
-                        <span id="energyUpkeepRate">0.00</span>)<span class="unit-label">e/sec</span>
-                    </span>
-                </div>
-                <div class="resource">
-                    <span class="label">Credits:</span>
-                    <span class="current-value" id="currentCredits">0</span>
-                    <span class="separator">|</span>
-                    <span class="net-change" id="creditsNetChange">0.00</span><span class="unit-label">c/sec</span>
-                    <span class="separator">|</span>
-                    <span class="details-group">
-                        (<span id="creditsProductionRate">0.00</span>
-                        <span class="separator-dash">-</span>
-                        <span id="creditsUpkeepRate">0.00</span>)<span class="unit-label">c/sec</span>
+                    <span class="data-cell current-value-cell"><span class="current-value" id="currentEnergy">0</span></span>
+                    <span class="data-cell separator-cell"><span class="separator">|</span></span>
+                    <span class="data-cell net-change-cell"><span class="net-change" id="energyNetChange">0.00</span><span class="unit-label">e/sec</span></span>
+                    <span class="data-cell separator-cell"><span class="separator">|</span></span>
+                    <span class="data-cell details-cell">
+                        <span class="details-group">
+                            (<span class="rate-value" id="energyProductionRate">0.00</span>
+                            <span class="separator-dash">-</span>
+                            <span class="rate-value" id="energyUpkeepRate">0.00</span>)<span class="unit-label">e/sec</span>
+                        </span>
                     </span>
                 </div>
                 <div class="resource">
                     <span class="label">Material:</span>
-                    <span class="current-value" id="currentMaterial">0</span>
-                    <span class="separator">|</span>
-                    <span class="net-change" id="materialNetChange">0.00</span><span class="unit-label">m/sec</span>
-                    <span class="separator">|</span>
-                    <span class="details-group">
-                        (<span id="materialProductionRate">0.00</span>
-                        <span class="separator-dash">-</span>
-                        <span id="materialUpkeepRate">0.00</span>)<span class="unit-label">m/sec</span>
+                    <span class="data-cell current-value-cell"><span class="current-value" id="currentMaterial">0</span></span>
+                    <span class="data-cell separator-cell"><span class="separator">|</span></span>
+                    <span class="data-cell net-change-cell"><span class="net-change" id="materialNetChange">0.00</span><span class="unit-label">m/sec</span></span>
+                    <span class="data-cell separator-cell"><span class="separator">|</span></span>
+                    <span class="data-cell details-cell">
+                        <span class="details-group">
+                            (<span class="rate-value" id="materialProductionRate">0.00</span>
+                            <span class="separator-dash">-</span>
+                            <span class="rate-value" id="materialUpkeepRate">0.00</span>)<span class="unit-label">m/sec</span>
+                        </span>
                     </span>
                 </div>
                 <div class="resource">
-                    <span class="label">Research:</span>
-                    <span class="current-value" id="currentResearch">0</span>
-                    <span class="separator">|</span>
-                    <span class="net-change" id="researchNetChange">0.00</span><span class="unit-label">r/sec</span>
-                    <span class="separator">|</span>
-                    <span class="details-group">
-                        (<span id="researchProductionRate">0.00</span>
-                        <span class="separator-dash">-</span>
-                        <span id="researchUpkeepRate">0.00</span>)<span class="unit-label">r/sec</span>
+                    <span class="label">Research Data:</span>
+                    <span class="data-cell current-value-cell"><span class="current-value" id="currentResearch">0</span></span>
+                    <span class="data-cell separator-cell"><span class="separator">|</span></span>
+                    <span class="data-cell net-change-cell"><span class="net-change" id="researchNetChange">0.00</span><span class="unit-label">r.data/sec</span></span>
+                    <span class="data-cell separator-cell"><span class="separator">|</span></span>
+                    <span class="data-cell details-cell">
+                        <span class="details-group">
+                            (<span class="rate-value" id="researchProductionRate">0.00</span>
+                            <span class="separator-dash">-</span>
+                            <span class="rate-value" id="researchUpkeepRate">0.00</span>)<span class="unit-label">r.data/sec</span>
+                        </span>
+                    </span>
+                </div>
+                <div class="resource">
+                    <span class="label">Credits:</span>
+                    <span class="data-cell current-value-cell"><span class="current-value" id="currentCredits">0</span></span>
+                    <span class="data-cell separator-cell"><span class="separator">|</span></span>
+                    <span class="data-cell net-change-cell"><span class="net-change" id="creditsNetChange">0.00</span><span class="unit-label">c/sec</span></span>
+                    <span class="data-cell separator-cell"><span class="separator">|</span></span>
+                    <span class="data-cell details-cell">
+                        <span class="details-group">
+                            (<span class="rate-value" id="creditsProductionRate">0.00</span>
+                            <span class="separator-dash">-</span>
+                            <span class="rate-value" id="creditsUpkeepRate">0.00</span>)<span class="unit-label">c/sec</span>
+                        </span>
                     </span>
                 </div>
             </section>
 
             <section id="interaction-area">
                 <h2>Core Operations</h2>
-                <button id="mineEnergyButton">Mine Energy (Click Power: <span id="clickPowerDisplay">1</span>)</button>
-                <p>Total Clicks: <span id="totalClicksDisplay">0</span></p>
-                <p>Promotion Level: <span id="promotionLevelDisplay">0</span> (+<span id="promotionBonusDisplay">0</span> Energy/Click)</p>
-            </section>
-        </div> <div class="game-sections-wrapper">
-            <section id="buildings-automation-display">
-                <h2>Construction & Automation</h2>
-                <div id="building-list">
-                    <p>No facilities online.</p>
+                <button id="mineEnergyButton">Siphon Energy (Power: <span id="clickPowerDisplay">1</span>)</button>
+                <div class="interaction-details">
+                    <p>Total Siphons: <span id="totalClicksDisplay">0</span></p>
+                    <p>Attunement: <span id="promotionLevelDisplay">0</span> (<span id="promotionBonusDisplay">+0</span> E/Siphon)</p>
+                </div>
+                
+                <hr class="operations-divider">
+                <p class="manual-conversion-title"><strong>Manual Conversion Matrix:</strong></p>
+                <div class="manual-conversion-buttons">
+                    <button id="manualConvertMaterialButton" class="manual-action-button">Coalesce Material (10E → 1M)</button>
+                    <button id="manualConvertResearchButton" class="manual-action-button">Emulate Data (15E → 1RData)</button>
                 </div>
             </section>
+        </div> 
 
-            <section id="science-tree-display">
-                <h2>Research & Development</h2>
-                <div id="science-list">
-                    <p>No research projects available.</p>
-                </div>
-            </section>
-        </div>
+        <nav class="category-navigation">
+            <button id="navButtonConstruction" class="category-nav-button" data-category="construction">Construction & Automation</button>
+            <button id="navButtonResearch" class="category-nav-button" data-category="research">Research & Development</button>
+            <button id="navButtonBanking" class="category-nav-button" data-category="banking">Banking & Finance</button>
+        </nav>
+
+        <section id="category-content-area">
+            <h2 id="categoryTitle">Select a Category Above</h2>
+            <div id="categoryListContainer">
+                <p>Details for the selected category will appear here.</p>
+            </div>
+        </section>
 
         <footer>
-            <p>Energy Nexus Interface v0.2 | Status: Nominal</p>
-        </footer>
+            <p>Aethel Interface v0.4.2 | System View Active</p> </footer>
     </div>
 
     <script src="js/gameData.js"></script>
-    <script src="js/buildings.js"></script>
+    <script src="js/buildings.js"></script> 
     <script src="js/science.js"></script>
     <script src="js/uiUpdates.js"></script>
     <script src="js/eventHandlers.js"></script>

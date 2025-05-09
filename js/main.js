@@ -2,80 +2,75 @@
 
 function gameTick() {
     const now = Date.now();
-    const delta = now - gameData.lastTick;
 
-    // --- Passive Energy from Vault ---
-    // Energy vault: always increase by a factor of 1.01 per second (or gameData.vaultMultiplierPercent).
-    // This means currentEnergy * (vaultMultiplierPercent / 100) is ADDED each second.
-    if (gameData.currentEnergy > 0) { // This check is good
-        const vaultFactor = getVaultGrowthFactor(); // Ensure getVaultGrowthFactor() returns a valid number
-        // Ensure gameData.currentEnergy is a number BEFORE this multiplication
-        const energyFromVaultThisTick = gameData.currentEnergy * (vaultFactor - 1);
-        if (!isNaN(energyFromVaultThisTick)) { // Add a check
-            gameData.currentEnergy += energyFromVaultThisTick;
-            gameData.productionRates.energyFromVault = energyFromVaultThisTick;
-        } else {
-            gameData.productionRates.energyFromVault = 0; // Prevent NaN propagation
-            // console.error("NaN detected in energyFromVaultThisTick", gameData.currentEnergy, vaultFactor);
+    // --- 1. Calculate Potential Production & Energy Demand ---
+    calculateTotalProductionAndUpkeep(); // From buildings.js - populates gameData.productionRates & .upkeepRates
+
+    // --- 2. Ambient Energy Siphoning ---
+    if (gameData.currentEnergy > 0) {
+        const siphonFactor = getAmbientSiphonFactor(); // e.g., 1.01 for 1%
+        const energyFromSiphon = gameData.currentEnergy * (siphonFactor - 1);
+        gameData.productionRates.energyFromAmbientSiphon = energyFromSiphon;
+        // This energy is added *after* checking if converters can run from existing + harvester energy
+    } else {
+        gameData.productionRates.energyFromAmbientSiphon = 0;
+    }
+
+    // --- 3. Gross Energy Available This Tick (Before Converters Run) ---
+    let grossEnergyAvailable = gameData.currentEnergy + gameData.productionRates.energyFromHarvesters + gameData.productionRates.energyFromAmbientSiphon;
+    grossEnergyAvailable -= gameData.upkeepRates.energyForOtherSystems; // Subtract harvester upkeep
+
+    // --- 4. Determine Converter Efficiency based on Energy Availability ---
+    let converterEfficiencyFactor = 1; // Assume 100% efficiency
+    const totalEnergyDemandFromConverters = gameData.upkeepRates.energyForConverters;
+
+    if (totalEnergyDemandFromConverters > 0) { // Only if converters are trying to run
+        if (grossEnergyAvailable >= totalEnergyDemandFromConverters) {
+            converterEfficiencyFactor = 1;
+            gameData.currentEnergy = grossEnergyAvailable - totalEnergyDemandFromConverters; // Consume energy
+        } else if (grossEnergyAvailable > 0) { // Not enough for full, but some energy exists
+            converterEfficiencyFactor = grossEnergyAvailable / totalEnergyDemandFromConverters;
+            gameData.currentEnergy = 0; // All available energy is used up
+            // console.warn(`Energy deficit for converters. Efficiency: ${converterEfficiencyFactor * 100}%`);
+        } else { // No energy available for converters
+            converterEfficiencyFactor = 0;
+            gameData.currentEnergy = Math.max(0, grossEnergyAvailable); // Should be 0 or slightly negative if upkeep was high
+            // console.warn("No energy available for converters.");
         }
-    } else {
-        gameData.productionRates.energyFromVault = 0;
+    } else { // No converters demanding energy
+         gameData.currentEnergy = Math.max(0, grossEnergyAvailable);
     }
 
 
-    // --- Calculate Production & Upkeep from Buildings ---
-    calculateTotalProductionAndUpkeep(); // This function is in buildings.js
-                                        // It updates gameData.productionRates and gameData.upkeepRates
-                                        // (excluding vault energy which is handled above)
+    // --- 5. Apply Actual Production (Scaled by Converter Efficiency) ---
+    gameData.material += gameData.productionRates.material * converterEfficiencyFactor;
+    gameData.researchData += gameData.productionRates.researchData * converterEfficiencyFactor;
+    gameData.credits += gameData.productionRates.credits * converterEfficiencyFactor;
+    // Energy has already been updated in step 4 based on consumption.
 
-    // --- Apply Production (per second) ---
-    // These are already per second, so no delta multiplication needed if tick is 1s
-    gameData.material += gameData.productionRates.material;
-    gameData.credits += gameData.productionRates.credits;
-    gameData.research += gameData.productionRates.research;
-
-    // --- Apply Upkeep (per second) ---
-    let energyDeficit = false;
-    let newEnergy = gameData.currentEnergy - gameData.upkeepRates.energy;
-
-    if (newEnergy < 0) {
-        // Simple deficit handling: set energy to 0, production might halt or reduce.
-        // For now, just note the deficit and prevent energy from going deeply negative from upkeep.
-        // More complex: shut down buildings, apply penalties.
-        // gameData.currentEnergy = 0; // Option 1: bottom out energy
-        // For now, allow it to go slightly negative to show the problem, but cap it
-        gameData.currentEnergy = Math.max(-100, newEnergy); // Prevent large negative values from upkeep
-        energyDeficit = true;
-        console.warn("Energy deficit! Upkeep exceeds available energy.");
-        // Potentially reduce production rates if in deficit in a more complex system
-    } else {
-        gameData.currentEnergy = newEnergy;
+    // --- 6. Apply Credit Upkeep ---
+    gameData.credits -= gameData.upkeepRates.creditsForMaintenance;
+    if (gameData.credits < 0) {
+        // console.warn("Credit deficit!");
+        gameData.credits = 0; // Or handle penalties
     }
 
-    gameData.credits -= gameData.upkeepRates.credits;
-    // Handle negative credits if necessary (e.g., loans, penalties)
-    if (gameData.credits < 0) gameData.credits = 0; // Simplest: don't go below 0
+    // Safety net for energy (should not go far below zero from harvester upkeep)
+    if (gameData.currentEnergy < 0) gameData.currentEnergy = 0;
 
 
-    // --- Update UI ---
-    // We update UI frequently to ensure buttons (buy/research) are enabled/disabled correctly
+    // --- 7. Update UI ---
     updateAllUIDisplays();
-
     gameData.lastTick = now;
 }
 
+// Modify initializeGame if needed for new starting values
 function initializeGame() {
-    console.log("Initializing Energy Clicker...");
-    // Load game from localStorage if implemented
-    // For now, just use default gameData
-
-    // Initial UI population
+    console.log("Initializing Aethel: Conduit of Creation...");
+    gameData.clickPower = gameData.rawEnergyPerClick; // Initialize clickPower based on rawEnergyPerClick
     updateAllUIDisplays();
-
-    // Start the game loop
     setInterval(gameTick, gameData.gameSettings.tickRate);
-    console.log("Game loop started.");
+    console.log("Cosmic Structure Online. Tick rate: " + gameData.gameSettings.tickRate + "ms");
 }
 
-// Wait for the DOM to be fully loaded before starting the game
 document.addEventListener('DOMContentLoaded', initializeGame);

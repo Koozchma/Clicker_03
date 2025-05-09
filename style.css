@@ -1,24 +1,29 @@
 /* style.css */
 :root {
-    --color-bg-deep-blue: #1a2238;
-    --color-bg-charcoal: #23272a;
-    --color-bg-black: #0d0d0d;
-    --color-text-light: #e0e0e0;
-    --color-text-secondary: #9da5b3;
+    --color-bg-deep-blue: #10141f; 
+    --color-bg-charcoal: #1c1f26;   
+    --color-bg-black: #0a0c10;     
+    --color-text-light: #e8eaf6;   
+    --color-text-secondary: #a0a8c0; 
 
-    --color-accent-cyan: #00ffff;
-    --color-accent-green: #66ff99;
-    --color-accent-purple: #9370db;
-    --color-accent-orange-glow: #ff8c00;
-    --color-accent-red-glow: #ff4d4d;
+    --color-accent-cyan: #00e5ff;       
+    --color-accent-green: #4caf50;      
+    --color-accent-purple: #7e57c2;     
+    --color-accent-orange-glow: #ff9800; 
+    --color-accent-red-glow: #f44336;   
 
-    --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* Consider adding a monospaced font for numbers if desired: */
-    /* --font-numeric: 'Roboto Mono', 'Fira Code', Consolas, monospace; */
-    --card-bg: rgba(35, 39, 42, 0.75); /* Slightly more opaque card */
-    --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-    --border-radius-main: 8px;
+    --font-primary: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    --font-numeric: 'Roboto Mono', Consolas, monospace; 
+    
+    --card-bg: var(--color-bg-charcoal); 
+    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); 
+    --card-border: 1px solid rgba(0, 229, 255, 0.1); 
+    --border-radius-main: 10px; 
 }
+
+/* Import Roboto and Roboto Mono from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap');
+
 
 body {
     font-family: var(--font-primary);
@@ -30,214 +35,396 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    font-size: 16px;
-    line-height: 1.6;
+    font-size: 15px; 
+    line-height: 1.65;
+    font-weight: 400; 
 }
 
 .container {
     width: 95%;
-    max-width: 1400px;
+    max-width: 1300px; 
     padding: 0;
 }
 
 header {
     width: 100%;
     text-align: center;
-    padding: 20px 0;
-    margin-bottom: 30px;
+    padding: 25px 0; 
+    margin-bottom: 35px; 
 }
 
 header h1 {
     color: var(--color-accent-cyan);
-    font-size: 2.5em;
+    font-size: 2.8em; 
+    font-weight: 300; 
     margin: 0;
-    text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.4), 0 0 20px rgba(0, 229, 255, 0.2); 
+    letter-spacing: 1px;
 }
+
+.top-row-layout {
+    display: flex;
+    flex-direction: row; 
+    gap: 30px; 
+    width: 100%;
+    margin-bottom: 35px; 
+}
+
+.top-row-layout > section {
+    flex-grow: 1;
+    flex-basis: 0; 
+}
+.top-row-layout #resource-display {
+    flex-grow: 3; 
+}
+.top-row-layout #interaction-area {
+    flex-grow: 2; 
+}
+
 
 section {
     background-color: var(--card-bg);
-    padding: 25px 30px;
-    margin-bottom: 30px;
+    padding: 20px 25px; 
     border-radius: var(--border-radius-main);
     box-shadow: var(--card-shadow);
+    border: var(--card-border); 
     transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    margin-bottom: 35px; 
 }
+
+.top-row-layout > section {
+    margin-bottom: 0;
+}
+
 
 h2 {
     color: var(--color-accent-green);
-    border-bottom: 1px solid var(--color-accent-green);
-    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(76, 175, 80, 0.4); 
+    padding-bottom: 12px; 
     margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.8em;
-    text-shadow: 0 0 5px rgba(102, 255, 153, 0.2);
+    margin-bottom: 25px; 
+    font-size: 1.6em; 
+    font-weight: 500; 
+    text-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
+    letter-spacing: 0.5px;
 }
 
 /* Resource Display Styling */
 .resource {
-    margin-bottom: 15px;
-    font-size: 1.1em;
+    margin-bottom: 12px; 
+    font-size: 1.05em; 
     display: flex;
-    flex-wrap: wrap; /* Allow wrapping on very small screens if necessary */
-    align-items: baseline; /* Align text along their baseline */
+    align-items: baseline; 
 }
 
-.resource span:first-child { /* Resource name, e.g., "Energy:" */
-    font-weight: bold;
+.resource .label { 
+    font-weight: 500; 
     color: var(--color-accent-cyan);
-    margin-right: 8px;
-    flex-shrink: 0; /* Prevent label from shrinking */
+    margin-right: 10px; 
+    flex-shrink: 0; 
+    width: 115px; 
+    text-align: left;
 }
 
-.resource span[id^="current"] { /* The current amount, e.g., currentEnergy */
-    font-weight: bold;
+/* Styling for data cells to control their width and alignment */
+.resource .data-cell {
+    display: inline-flex; 
+    align-items: baseline;
+    text-align: right; 
+    flex-shrink: 0; 
+    padding: 0 2px; /* Add a little padding within cells */
+}
+
+.resource .current-value-cell {
+    min-width: 85px; /* Adjusted min width */
+    justify-content: flex-end; /* Align content to the right */
+}
+.resource .net-change-cell {
+    min-width: 105px; /* Adjusted min width */
+    justify-content: flex-end; /* Align content (number + unit) to the right */
+}
+.resource .details-cell {
+    min-width: 160px; /* Adjusted min width */
+    justify-content: flex-start; 
+    text-align: left;
+}
+.resource .separator-cell {
+    min-width: 20px; 
+    justify-content: center; 
+    text-align: center;
+}
+
+
+.resource .current-value { 
+    font-weight: 700; 
     color: var(--color-text-light);
-    margin-right: 10px;
-    min-width: 70px; /* Adjust this based on expected number lengths! */
-    display: inline-block;
+    font-family: var(--font-numeric);
+    /* width: 100%; /* Let the cell control width */
     text-align: right;
-    flex-shrink: 0;
-    /* font-family: var(--font-numeric); /* Uncomment if using a numeric font */
 }
 
-/* Separator for the "|" character */
 .resource .separator {
     color: var(--color-text-secondary);
-    margin: 0 8px; /* Adjust spacing around separator */
-    flex-shrink: 0;
+    opacity: 0.6; 
 }
 
-.resource span[id$="NetChange"] {
-    /* JavaScript will need to add a class for negative values to turn red/orange */
-    color: var(--color-accent-green); /* Default to green for positive net change */
-    font-weight: bold;
-    margin-right: 5px; /* Space before unit label */
-    min-width: 80px; /* Adjust this! */
-    display: inline-block;
+.resource .net-change {
+    color: var(--color-accent-green); 
+    font-weight: 700; 
+    font-family: var(--font-numeric);
+    /* width: 100%; Let the cell control width */
     text-align: right;
-    flex-shrink: 0;
-    /* font-family: var(--font-numeric); */
 }
-.resource span[id$="NetChange"].negative-value { /* Add this class via JS if value < 0 */
+.resource .net-change.negative-value { 
     color: var(--color-accent-red-glow);
 }
 
-
-.resource span[id$="ProductionRate"],
-.resource span[id$="UpkeepRate"] {
+.resource .rate-value { 
     color: var(--color-text-secondary);
-    min-width: 60px; /* Adjust this! */
-    display: inline-block;
+    font-family: var(--font-numeric);
     text-align: right;
-    /* font-family: var(--font-numeric); */
+    min-width: 45px; /* Give rate values a min-width so the '-' aligns better */
+    display: inline-block;
 }
 
-/* Styling for the (Production - Upkeep) part */
 .resource .details-group {
     color: var(--color-text-secondary);
-    margin-left: 0px; /* Let the separator handle spacing */
-    display: inline-flex; /* Keep ( ) and numbers together */
+    display: inline-flex; 
     align-items: baseline;
-    flex-shrink: 0;
+    font-family: var(--font-numeric); 
 }
 .resource .details-group .separator-dash {
-    margin: 0 3px; /* Space around the dash */
+    margin: 0 4px; 
+    opacity: 0.6;
 }
 
-
-/* Unit labels like "e/sec", "c/sec" */
 .resource .unit-label {
     color: var(--color-text-secondary);
-    margin-left: 3px; /* Small space after right-aligned number */
-    font-size: 0.9em;
-    flex-shrink: 0;
+    margin-left: 3px; /* Reduced margin-left */
+    font-size: 0.85em; 
+    opacity: 0.8;
+    flex-shrink: 0; 
 }
 
-
-/* Interaction Area Styling */
-#interaction-area button {
+/* Interaction Area Styling (remains largely the same) */
+#interaction-area {
+    display: flex;
+    flex-direction: column; 
+}
+#interaction-area button#mineEnergyButton {
     background-color: var(--color-accent-cyan);
     color: var(--color-bg-black);
     border: none;
-    padding: 12px 25px;
+    padding: 12px 20px; 
     text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 1.1em;
-    font-weight: bold;
-    margin: 10px 0;
+    font-size: 1.05em; 
+    font-weight: 700; 
+    margin: 10px auto; 
     cursor: pointer;
     border-radius: var(--border-radius-main);
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0, 255, 255, 0.2);
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 5px 15px rgba(0, 229, 255, 0.25);
+    min-width: 220px; 
 }
 
-#interaction-area button:hover:not(:disabled) {
-    background-color: #33ffff; /* Lighter cyan */
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 255, 255, 0.3);
+#interaction-area button#mineEnergyButton:hover:not(:disabled) {
+    background-color: #33ffff; 
+    transform: translateY(-2px) scale(1.02); 
+    box-shadow: 0 7px 20px rgba(0, 229, 255, 0.35);
 }
 
-#interaction-area button:disabled {
-    background-color: #555; /* Using a generic disabled color from before */
-    color: #888;
+#interaction-area button#mineEnergyButton:disabled {
+    background-color: #404652; 
+    color: #788296;
     cursor: not-allowed;
     box-shadow: none;
     transform: translateY(0);
 }
 
-#interaction-area p {
+#interaction-area .interaction-details {
+    text-align: center; 
+}
+#interaction-area .interaction-details p {
     color: var(--color-text-secondary);
+    margin-top: 6px;
+    margin-bottom: 6px;
+    font-size: 0.9em;
 }
 
-/* Game Sections Wrapper (Buildings & Science) */
-.game-sections-wrapper {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr)); /* Responsive columns, ensure minmax doesn't exceed 100% */
-    gap: 30px;
+#interaction-area .operations-divider {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 229, 255, 0), rgba(0, 229, 255, 0.3), rgba(0, 229, 255, 0)); 
+    margin: 15px 0;
+}
+
+#interaction-area .manual-conversion-title strong { 
+    color: var(--color-accent-cyan);
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 8px; 
+    text-align: center;
+    font-weight: 500;
+}
+#interaction-area .manual-conversion-buttons {
+    display: flex;
+    justify-content: center; 
+    gap: 10px; 
+    flex-wrap: wrap; 
+}
+
+#interaction-area .manual-action-button {
+    background-color: var(--color-accent-purple); 
+    color: var(--color-text-light);
+    border: none;
+    padding: 10px 18px; 
+    font-size: 0.9em; 
+    font-weight: 500;
+    margin: 5px 0; 
+    cursor: pointer;
+    border-radius: calc(var(--border-radius-main) - 2px); 
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(126, 87, 194, 0.25);
+}
+
+#interaction-area .manual-action-button:hover:not(:disabled) {
+    background-color: #9575cd; 
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 6px 16px rgba(126, 87, 194, 0.35);
+}
+
+#interaction-area .manual-action-button:disabled {
+    background-color: #39324b; 
+    color: #797091;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: translateY(0);
+}
+
+/* Category Navigation and Content Area (remains largely the same) */
+.category-navigation {
+    display: flex;
+    justify-content: center; 
+    gap: 20px; 
+    margin-bottom: 35px; 
     width: 100%;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.15); 
+    padding-bottom: 20px; 
 }
 
+.category-nav-button {
+    padding: 12px 25px; 
+    font-size: 1.05em; 
+    font-weight: 500; 
+    color: var(--color-text-secondary); 
+    background-color: transparent; 
+    border: 2px solid transparent; 
+    border-radius: var(--border-radius-main);
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+}
+
+.category-nav-button:hover:not(.active) {
+    color: var(--color-text-light);
+    border-color: var(--color-accent-purple); 
+    background-color: rgba(126, 87, 194, 0.1); 
+    transform: translateY(-2px);
+}
+
+.category-nav-button.active { 
+    background-color: var(--color-accent-green); 
+    color: var(--color-bg-black);
+    border-color: var(--color-accent-green);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.5), 0 0 5px rgba(76, 175, 80, 0.3) inset; 
+    transform: translateY(0px); 
+}
+
+#category-content-area {
+    width: 100%; 
+    box-sizing: border-box; 
+    border: var(--card-border); 
+    background-color: var(--card-bg); 
+}
+
+#category-content-area h2 { 
+    color: var(--color-accent-cyan); 
+    border-bottom-color: rgba(0, 229, 255, 0.4); 
+    font-weight: 500;
+}
+
+#categoryListContainer {
+    min-height: 150px; 
+    padding-top: 10px; 
+}
+#categoryListContainer > p { 
+    text-align: center;
+    font-style: italic;
+    color: var(--color-text-secondary);
+    opacity: 0.7;
+    padding: 20px;
+}
+
+
+/* Building and Science Item Styling (remains largely the same) */
 .building-item, .science-item {
-    background-color: rgba(44, 50, 60, 0.85);
-    padding: 15px 20px;
-    margin-bottom: 15px;
-    border-radius: calc(var(--border-radius-main) - 2px);
-    border-left: 4px solid var(--color-accent-purple);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    transition: border-left-color 0.3s ease;
+    background-color: rgba(28, 31, 38, 0.85); 
+    padding: 18px 22px; 
+    margin-bottom: 18px; 
+    border-radius: calc(var(--border-radius-main) - 3px); 
+    border-left: 5px solid var(--color-accent-purple); 
+    box-shadow: 0 5px 12px rgba(0,0,0,0.25); 
+    transition: border-left-color 0.3s ease, transform 0.2s ease;
+}
+.building-item:hover, .science-item:hover:not(.is-unlocked) {
+    transform: translateX(5px); 
+    border-left-color: var(--color-accent-cyan);
 }
 
-.science-item.is-unlocked { /* Class added by JS for unlocked science */
-    border-left-color: var(--color-accent-green) !important; /* Use important if needed to override */
-    opacity: 0.7; /* Make researched items slightly faded */
+.building-item:last-child, .science-item:last-child {
+    margin-bottom: 0; 
+}
+
+
+.science-item.is-unlocked { 
+    border-left-color: var(--color-accent-green) !important; 
+    opacity: 0.6; 
+}
+.science-item.is-unlocked:hover {
+    transform: translateX(0); 
+    border-left-color: var(--color-accent-green) !important;
 }
 .science-item.is-unlocked h3 {
     text-decoration: line-through;
     text-decoration-color: var(--color-accent-green);
+    opacity: 0.7;
 }
 
 
 .building-item h3, .science-item h3 {
     margin-top: 0;
-    margin-bottom: 8px;
+    margin-bottom: 10px; 
     color: var(--color-text-light);
-    font-size: 1.2em;
+    font-size: 1.15em; 
+    font-weight: 500;
 }
 
 .building-item p, .science-item p {
-    margin: 5px 0;
-    font-size: 0.95em;
+    margin: 6px 0; 
+    font-size: 0.9em; 
     color: var(--color-text-secondary);
+    line-height: 1.5;
 }
-.science-item p.cost-line { /* Add class="cost-line" to the cost paragraph in JS/HTML */
+.science-item p.cost-line { 
     color: var(--color-accent-cyan);
+    font-weight: 500;
 }
-.science-item p.prereq-line span.met { /* Add class="met" to met prerequisites */
+.science-item p.prereq-line span.met { 
     color: var(--color-accent-green);
+    font-weight: 500; 
 }
-.science-item p.prereq-line span.unmet { /* Add class="unmet" to unmet prerequisites */
+.science-item p.prereq-line span.unmet { 
     color: var(--color-accent-red-glow);
+    font-weight: 500; 
 }
 
 
@@ -245,40 +432,41 @@ h2 {
     background-color: var(--color-accent-purple);
     color: var(--color-text-light);
     border: none;
-    padding: 8px 15px;
-    font-size: 0.9em;
-    font-weight: bold;
+    padding: 9px 16px; 
+    font-size: 0.85em; 
+    font-weight: 500; 
     border-radius: calc(var(--border-radius-main) - 4px);
     cursor: pointer;
-    margin-top: 10px;
-    transition: background-color 0.2s ease, transform 0.2s ease;
+    margin-top: 12px; 
+    transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 .building-item button:hover:not(:disabled),
 .science-item button:hover:not(:disabled) {
-    background-color: #ab82ff; /* Lighter purple */
-    transform: translateY(-1px);
+    background-color: #9575cd; 
+    transform: translateY(-1px) scale(1.02);
 }
 
 .building-item button:disabled,
 .science-item button:disabled {
-    background-color: #4a4a52; /* Darker, muted purple for disabled */
-    color: #787887;
+    background-color: #39324b; 
+    color: #797091;
     cursor: not-allowed;
     transform: translateY(0);
 }
 
+
 footer {
     width: 100%;
     text-align: center;
-    margin-top: 40px;
-    padding: 20px 0;
-    font-size: 0.9em;
+    margin-top: 50px; 
+    padding: 25px 0; 
+    font-size: 0.85em; 
     color: var(--color-text-secondary);
-    border-top: 1px solid rgba(157, 165, 179, 0.2);
+    opacity: 0.7; 
+    border-top: 1px solid rgba(160, 168, 192, 0.15); 
 }
 
-/* Placeholder for animations */
 .slide-in {
     animation: slideInFromBottom 0.5s ease-out forwards;
 }
@@ -294,19 +482,54 @@ footer {
     }
 }
 
-/* NEW STYLES FOR TOP ROW LAYOUT */
-.top-row-layout {
-    display: flex;
-    flex-direction: row; /* Arrange children in a row */
-    justify-content: space-between; /* Or space-around, or use gap */
-    align-items: flex-start; /* Align items to the top of the row */
-    gap: 30px; /* Space between the two sections */
-    width: 100%; /* Make the layout container take full width */
-    margin-bottom: 30px; /* Space below this row before the next sections */
+@media (max-width: 1024px) { 
+    .top-row-layout {
+        flex-direction: column; 
+        align-items: stretch; 
+    }
+
+    .top-row-layout > section {
+        margin-bottom: 30px; 
+        width: auto; 
+    }
+
+    .top-row-layout > section:last-child {
+        margin-bottom: 0; 
+    }
 }
 
-.top-row-layout > section {
-    flex-grow: 1; /* Allow sections to grow */
-    flex-basis: 0; /* Distribute space evenly initially, or set specific basis */
-    margin-bottom: 0; /* Remove bottom margin from sections inside this flex container as gap handles it */
+@media (max-width: 768px) { 
+    .category-navigation {
+        flex-direction: column;
+        align-items: stretch; 
+    }
+    .category-nav-button {
+        margin-bottom: 10px; 
+    }
+    .category-nav-button:last-child {
+        margin-bottom: 0;
+    }
+
+    .resource { 
+        /* Allow resource details to wrap more aggressively - already default for flex */
+    }
+    .resource .label {
+        width: 100%; 
+        margin-bottom: 3px; 
+        text-align: left;
+    }
+    .resource .data-cell {
+        min-width: auto !important; /* Override min-width for aggressive wrapping */
+        margin-bottom: 5px; 
+        padding: 0 3px; /* Reduce padding when wrapped */
+    }
+    .resource .current-value-cell,
+    .resource .net-change-cell,
+    .resource .details-cell {
+        justify-content: flex-start; /* Align left when stacked */
+        text-align: left;
+    }
+     .resource .current-value, .resource .net-change, .resource .rate-value {
+        text-align: left; /* Ensure numbers align left in their cells when stacked */
+    }
 }

@@ -1,51 +1,61 @@
 // js/gameData.js
 const gameData = {
     // Core Resources
-    currentEnergy: 0,
-    credits: 0,
-    material: 0,
-    research: 0,
+    currentEnergy: 25, 
+    rawEnergyPerClick: 1,
+    ambientEnergySiphonRate: 0.01, // CHANGED: Now 1% for ambient siphon
 
-    // Clicking
+    material: 0,
+    researchData: 0,
+    credits: 0,
+
+    // Clicking & Manual Siphoning
     clickPower: 1,
     totalClicks: 0,
     promotionLevel: 0,
-    promotionBaseBonus: 1, // Each promotion adds +1 to clickPower
+    promotionBaseBonus: 1,
 
-    // Energy Vault
-    vaultMultiplierPercent: 0.1, // Represents 1.01 factor (0.1% actual increase on current value per second)
-                                 // The actual math will be currentEnergy * (1 + vaultMultiplierPercent / 100)
-                                 // Or simply currentEnergy * 1.001 (if vaultMultiplierPercent is 0.1)
+    // Manual Conversion Settings
+    manualConversion: {
+        material: { energyCost: 10, materialYield: 1 },
+        research: { energyCost: 15, researchDataYield: 1 }
+    },
 
-    // Production & Upkeep Rates (calculated each tick)
+    // Production & Upkeep Rates
     productionRates: {
-        energy: 0, // Passive from vault, separate from building production
-        credits: 0,
+        energyFromHarvesters: 0,
+        energyFromAmbientSiphon: 0,
         material: 0,
-        research: 0,
+        researchData: 0,
+        credits: 0,
     },
     upkeepRates: {
-        energy: 0,
-        credits: 0,
-        material: 0, // Material might not have upkeep, but good to have
-        research: 0,
+        energyForConverters: 0,
+        energyForOtherSystems: 0,
+        creditsForMaintenance: 0,
+    },
+    consumptionRates: {
+        energyByMaterialConverters: 0,
+        energyByResearchEmulators: 0,
+        energyByCreditSynthesizers: 0,
     },
 
     // Game State
     lastTick: Date.now(),
     gameSettings: {
-        tickRate: 1000, // milliseconds
+        tickRate: 1000,
         clicksForPromotion: 10,
     },
 
-    // Collections for buildings and science
-    ownedBuildings: {}, // e.g., { 'minerMk1': 2, 'labBasic': 1 }
-    unlockedScience: {}, // e.g., { 'sci_basicMining': true, 'sci_advChemistry': false }
+    ownedBuildings: {},
+    unlockedScience: {},
+    buildingCostModifier: 1,
 };
 
-// Function to get the actual vault growth factor
-function getVaultGrowthFactor() {
-    // Ensure vaultMultiplierPercent is a number
-    const multiplierPercent = Number(gameData.vaultMultiplierPercent) || 0;
-    return 1 + (multiplierPercent / 100);
+function getAmbientSiphonFactor() {
+    // This factor is (1 + rate), so if rate is 0.01, factor is 1.01
+    return 1 + (gameData.ambientEnergySiphonRate); 
 }
+
+// Log to confirm script is loaded
+console.log("gameData.js loaded. Ambient Siphon Rate: " + (gameData.ambientEnergySiphonRate * 100) + "%");
