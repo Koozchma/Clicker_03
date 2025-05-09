@@ -1,6 +1,231 @@
-/* Add these to your existing style.css */
+/* style.css */
+:root {
+    --color-bg-deep-blue: #1a2238;
+    --color-bg-charcoal: #23272a;
+    --color-bg-black: #0d0d0d;
+    --color-text-light: #e0e0e0;
+    --color-text-secondary: #9da5b3;
 
-/* ... (all previous styles) ... */
+    --color-accent-cyan: #00ffff;
+    --color-accent-green: #66ff99;
+    --color-accent-purple: #9370db;
+    --color-accent-orange-glow: #ff8c00;
+    --color-accent-red-glow: #ff4d4d;
+
+    --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --card-bg: rgba(35, 39, 42, 0.75); 
+    --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    --border-radius-main: 8px;
+}
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--color-bg-deep-blue);
+    color: var(--color-text-light);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.container {
+    width: 95%;
+    max-width: 1400px;
+    padding: 0;
+}
+
+header {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: var(--color-accent-cyan);
+    font-size: 2.5em;
+    margin: 0;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+}
+
+/* This is the parent for Resources and Operations */
+.top-row-layout {
+    display: flex;
+    flex-direction: row; /* Default: side-by-side */
+    gap: 30px; /* Space between the two sections */
+    width: 100%;
+    margin-bottom: 30px; /* Space below this row */
+}
+
+.top-row-layout > section {
+    flex-grow: 1;
+    flex-basis: 0; /* Allows them to share space based on flex-grow */
+    /* margin-bottom: 0; /* Individual margin-bottom for sections inside top-row is removed as gap handles it */
+}
+
+/* Optional: Define specific proportions if needed */
+/*
+.top-row-layout #resource-display {
+    flex-grow: 3; /* Example: Resources takes more space
+}
+.top-row-layout #interaction-area {
+    flex-grow: 2; /* Example: Operations takes less
+}
+*/
+
+
+/* This is the parent for Construction and R&D */
+.game-sections-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr));
+    gap: 30px;
+    width: 100%;
+}
+
+/* General section styling */
+section {
+    background-color: var(--card-bg);
+    padding: 25px 30px;
+    border-radius: var(--border-radius-main);
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    /* margin-bottom is applied to sections NOT in .top-row-layout or handled by grid gap */
+    margin-bottom: 30px; 
+}
+/* Remove bottom margin for sections that are direct children of flex/grid containers using gap */
+.top-row-layout > section,
+.game-sections-wrapper > section {
+    margin-bottom: 0;
+}
+
+
+h2 {
+    color: var(--color-accent-green);
+    border-bottom: 1px solid var(--color-accent-green);
+    padding-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    text-shadow: 0 0 5px rgba(102, 255, 153, 0.2);
+}
+
+/* Resource Display Styling */
+.resource {
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    display: flex;
+    flex-wrap: wrap; 
+    align-items: baseline; 
+}
+
+.resource .label { /* Resource name, e.g., "Energy:" */
+    font-weight: bold;
+    color: var(--color-accent-cyan);
+    margin-right: 8px;
+    flex-shrink: 0; 
+}
+
+.resource .current-value { /* The current amount, e.g., currentEnergy */
+    font-weight: bold;
+    color: var(--color-text-light);
+    margin-right: 10px;
+    min-width: 70px; 
+    display: inline-block;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.resource .separator {
+    color: var(--color-text-secondary);
+    margin: 0 8px; 
+    flex-shrink: 0;
+}
+
+.resource .net-change {
+    color: var(--color-accent-green); 
+    font-weight: bold;
+    margin-right: 0px; /* Space before unit label is handled by unit-label's margin-left */
+    min-width: 80px; 
+    display: inline-block;
+    text-align: right;
+    flex-shrink: 0;
+}
+.resource .net-change.negative-value { 
+    color: var(--color-accent-red-glow);
+}
+
+
+.resource span[id$="ProductionRate"],
+.resource span[id$="UpkeepRate"] {
+    color: var(--color-text-secondary);
+    min-width: 60px; 
+    display: inline-block;
+    text-align: right;
+}
+
+.resource .details-group {
+    color: var(--color-text-secondary);
+    margin-left: 0px; 
+    display: inline-flex; 
+    align-items: baseline;
+    flex-shrink: 0;
+}
+.resource .details-group .separator-dash {
+    margin: 0 3px; 
+}
+
+.resource .unit-label {
+    color: var(--color-text-secondary);
+    margin-left: 3px; 
+    font-size: 0.9em;
+    flex-shrink: 0;
+}
+
+/* Interaction Area Styling */
+#interaction-area button#mineEnergyButton { /* More specific for the main button */
+    background-color: var(--color-accent-cyan);
+    color: var(--color-bg-black);
+    border: none;
+    padding: 12px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin: 10px 0;
+    cursor: pointer;
+    border-radius: var(--border-radius-main);
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 255, 255, 0.2);
+}
+
+#interaction-area button#mineEnergyButton:hover:not(:disabled) {
+    background-color: #33ffff; 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 255, 255, 0.3);
+}
+
+#interaction-area button#mineEnergyButton:disabled {
+    background-color: #555; 
+    color: #888;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: translateY(0);
+}
+
+#interaction-area p {
+    color: var(--color-text-secondary);
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+#interaction-area p:last-of-type {
+    margin-bottom: 15px; /* More space before divider */
+}
+
 
 #interaction-area .operations-divider {
     border: 0;
@@ -10,7 +235,7 @@
 }
 
 #interaction-area .manual-action-button {
-    background-color: var(--color-accent-purple); /* Using purple for these actions */
+    background-color: var(--color-accent-purple); 
     color: var(--color-text-light);
     border: none;
     padding: 10px 15px;
@@ -24,7 +249,7 @@
 }
 
 #interaction-area .manual-action-button:hover:not(:disabled) {
-    background-color: #ab82ff; /* Lighter purple */
+    background-color: #ab82ff; 
     transform: translateY(-1px);
     box-shadow: 0 5px 12px rgba(147, 112, 219, 0.3);
 }
@@ -37,8 +262,130 @@
     transform: translateY(0);
 }
 
-#interaction-area p strong { /* For "Manual Conversion Matrix:" label */
+#interaction-area p strong { 
     color: var(--color-accent-cyan);
     display: block;
     margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+
+/* Building and Science Item Styling */
+.building-item, .science-item {
+    background-color: rgba(44, 50, 60, 0.85);
+    padding: 15px 20px;
+    margin-bottom: 15px; /* Space between items within a list */
+    border-radius: calc(var(--border-radius-main) - 2px);
+    border-left: 4px solid var(--color-accent-purple);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: border-left-color 0.3s ease;
+}
+.building-item:last-child, .science-item:last-child {
+    margin-bottom: 0; /* No bottom margin for the last item in a list */
+}
+
+
+.science-item.is-unlocked { 
+    border-left-color: var(--color-accent-green) !important; 
+    opacity: 0.7; 
+}
+.science-item.is-unlocked h3 {
+    text-decoration: line-through;
+    text-decoration-color: var(--color-accent-green);
+}
+
+
+.building-item h3, .science-item h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: var(--color-text-light);
+    font-size: 1.2em;
+}
+
+.building-item p, .science-item p {
+    margin: 5px 0;
+    font-size: 0.95em;
+    color: var(--color-text-secondary);
+}
+.science-item p.cost-line { 
+    color: var(--color-accent-cyan);
+}
+.science-item p.prereq-line span.met { 
+    color: var(--color-accent-green);
+    font-weight: bold;
+}
+.science-item p.prereq-line span.unmet { 
+    color: var(--color-accent-red-glow);
+    font-weight: bold;
+}
+
+
+.building-item button, .science-item button {
+    background-color: var(--color-accent-purple);
+    color: var(--color-text-light);
+    border: none;
+    padding: 8px 15px;
+    font-size: 0.9em;
+    font-weight: bold;
+    border-radius: calc(var(--border-radius-main) - 4px);
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.building-item button:hover:not(:disabled),
+.science-item button:hover:not(:disabled) {
+    background-color: #ab82ff; 
+    transform: translateY(-1px);
+}
+
+.building-item button:disabled,
+.science-item button:disabled {
+    background-color: #4a4a52; 
+    color: #787887;
+    cursor: not-allowed;
+    transform: translateY(0);
+}
+
+footer {
+    width: 100%;
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px 0;
+    font-size: 0.9em;
+    color: var(--color-text-secondary);
+    border-top: 1px solid rgba(157, 165, 179, 0.2);
+}
+
+/* Placeholder for animations */
+.slide-in {
+    animation: slideInFromBottom 0.5s ease-out forwards;
+}
+
+@keyframes slideInFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments for the top row */
+@media (max-width: 1024px) { /* Adjust breakpoint as needed */
+    .top-row-layout {
+        flex-direction: column; /* Stack them vertically */
+        align-items: stretch; /* Make them take full width in column layout */
+    }
+
+    .top-row-layout > section {
+        margin-bottom: 30px; /* Re-add bottom margin when stacked */
+        width: auto; /* Allow them to take full width of the flex column */
+    }
+
+    .top-row-layout > section:last-child {
+        margin-bottom: 0; /* No margin for the last one if it's before game-sections-wrapper */
+    }
 }
