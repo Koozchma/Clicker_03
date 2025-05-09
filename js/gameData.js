@@ -28,6 +28,7 @@ const gameData = {
         energy: 0,
         credits: 0,
         material: 0, // Material might not have upkeep, but good to have
+        research: 0,
     },
 
     // Game State
