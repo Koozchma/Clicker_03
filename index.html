@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Energy Clicker</title>
+    <title>Aethel: Conduit of Creation</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -28,18 +28,6 @@
                     </span>
                 </div>
                 <div class="resource">
-                    <span class="label">Credits:</span>
-                    <span class="current-value" id="currentCredits">0</span>
-                    <span class="separator">|</span>
-                    <span class="net-change" id="creditsNetChange">0.00</span><span class="unit-label">c/sec</span>
-                    <span class="separator">|</span>
-                    <span class="details-group">
-                        (<span id="creditsProductionRate">0.00</span>
-                        <span class="separator-dash">-</span>
-                        <span id="creditsUpkeepRate">0.00</span>)<span class="unit-label">c/sec</span>
-                    </span>
-                </div>
-                <div class="resource">
                     <span class="label">Material:</span>
                     <span class="current-value" id="currentMaterial">0</span>
                     <span class="separator">|</span>
@@ -52,26 +40,44 @@
                     </span>
                 </div>
                 <div class="resource">
-                    <span class="label">Research:</span>
-                    <span class="current-value" id="currentResearch">0</span>
-                    <span class="separator">|</span>
-                    <span class="net-change" id="researchNetChange">0.00</span><span class="unit-label">r/sec</span>
+                    <span class="label">Research Data:</span>
+                    <span class="current-value" id="currentResearch">0</span> <span class="separator">|</span>
+                    <span class="net-change" id="researchNetChange">0.00</span><span class="unit-label">r.data/sec</span>
                     <span class="separator">|</span>
                     <span class="details-group">
                         (<span id="researchProductionRate">0.00</span>
                         <span class="separator-dash">-</span>
-                        <span id="researchUpkeepRate">0.00</span>)<span class="unit-label">r/sec</span>
+                        <span id="researchUpkeepRate">0.00</span>)<span class="unit-label">r.data/sec</span>
+                    </span>
+                </div>
+                <div class="resource">
+                    <span class="label">Credits:</span>
+                    <span class="current-value" id="currentCredits">0</span>
+                    <span class="separator">|</span>
+                    <span class="net-change" id="creditsNetChange">0.00</span><span class="unit-label">c/sec</span>
+                    <span class="separator">|</span>
+                    <span class="details-group">
+                        (<span id="creditsProductionRate">0.00</span>
+                        <span class="separator-dash">-</span>
+                        <span id="creditsUpkeepRate">0.00</span>)<span class="unit-label">c/sec</span>
                     </span>
                 </div>
             </section>
 
             <section id="interaction-area">
                 <h2>Core Operations</h2>
-                <button id="mineEnergyButton">Mine Energy (Click Power: <span id="clickPowerDisplay">1</span>)</button>
-                <p>Total Clicks: <span id="totalClicksDisplay">0</span></p>
-                <p>Promotion Level: <span id="promotionLevelDisplay">0</span> (+<span id="promotionBonusDisplay">0</span> Energy/Click)</p>
+                <button id="mineEnergyButton">Siphon Energy (Power: <span id="clickPowerDisplay">1</span>)</button>
+                <p>Total Siphons: <span id="totalClicksDisplay">0</span> | Attunement: <span id="promotionLevelDisplay">0</span> (+<span id="promotionBonusDisplay">0</span> E/Siphon)</p>
+                
+                <hr class="operations-divider">
+                <p><strong>Manual Conversion Matrix:</strong></p>
+                <button id="manualConvertMaterialButton" class="manual-action-button">Coalesce Material (10E → 1M)</button>
+                <button id="manualConvertResearchButton" class="manual-action-button">Emulate Data (15E → 1RData)</button>
             </section>
-        </div> <div class="game-sections-wrapper">
+        </div>
+
+
+        <div class="game-sections-wrapper">
             <section id="buildings-automation-display">
                 <h2>Construction & Automation</h2>
                 <div id="building-list">
@@ -88,7 +94,7 @@
         </div>
 
         <footer>
-            <p>Energy Nexus Interface v0.2 | Status: Nominal</p>
+            <p>Aethel Interface v0.3 | Status: Awakening</p>
         </footer>
     </div>
 
