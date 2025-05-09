@@ -5,20 +5,22 @@ const buildingTypes = {
         id: 'basicEnergySiphon',
         name: 'Basic Energy Siphon',
         description: 'Improves passive siphoning of ambient universal energy.',
-        cost: { material: 20, credits: 0, energy: 0 }, // Costs material to build
-        production: { energy: 0.1 }, // Adds 0.1 Energy/sec to base generation
-        upkeep: { energy: 0.01 }, // Small energy upkeep to maintain the siphon itself
-        unlockedByScience: null, // Available early or by default
+        // COST CHANGE: Only energy, or very low other resources if it's unlocked via a free/cheap science.
+        // For now, let's make it cost only energy and be available by default.
+        cost: { material: 0, credits: 0, energy: 25 }, // Was: material: 20
+        production: { energy: 0.1 },
+        upkeep: { energy: 0.01 },
+        unlockedByScience: null, // Available by default
         type: 'harvester',
     },
     'stellarCollector': {
         id: 'stellarCollector',
         name: 'Stellar Radiation Collector',
         description: 'Harnesses nearby stellar radiation for a significant energy boost.',
-        cost: { material: 150, credits: 50, energy: 0 },
+        cost: { material: 150, credits: 50, energy: 0 }, // This can remain as is, for later
         production: { energy: 1.5 },
-        upkeep: { energy: 0.2, credits: 0.1 }, // Higher upkeep, might need credit maintenance
-        unlockedByScience: 'sci_stellar_harnessing',
+        upkeep: { energy: 0.2, credits: 0.1 },
+        unlockedByScience: 'sci_stellar_harnessing', // Make sure this science exists
         type: 'harvester',
     },
 
@@ -27,11 +29,12 @@ const buildingTypes = {
         id: 'matterCoalescerMk1',
         name: 'Matter Coalescer Mk1',
         description: 'Converts raw Energy into basic Material.',
-        cost: { material: 10, energy: 50 }, // Initial material cost is low or just energy
-        consumes: { energy: 0.5 },      // Energy consumed per second per building
-        produces: { material: 0.2 },    // Material produced per second per building
-        upkeep: {}, // Primary "upkeep" is its energy consumption
-        unlockedByScience: null,
+        // COST CHANGE: Only energy for the very first step.
+        cost: { material: 0, energy: 50 }, // Was: material: 10, energy: 50
+        consumes: { energy: 0.5 },
+        produces: { material: 0.2 },
+        upkeep: {},
+        unlockedByScience: null, // Let's make this available by default to get materials
         type: 'converter',
         outputResource: 'material',
         inputResource: 'energy',
@@ -40,11 +43,11 @@ const buildingTypes = {
         id: 'industrialFabricator',
         name: 'Industrial Fabricator',
         description: 'More efficiently transmutes Energy into complex Materials.',
-        cost: { material: 200, energy: 0 },
+        cost: { material: 200, energy: 0 }, // This requires material, so it's a clear progression
         consumes: { energy: 2.5 },
         produces: { material: 1.5 },
-        upkeep: { credits: 0.2 }, // May have credit upkeep for complexity
-        unlockedByScience: 'sci_advanced_material_conversion',
+        upkeep: { credits: 0.2 },
+        unlockedByScience: 'sci_advanced_material_conversion', // Make sure this science exists
         type: 'converter',
         outputResource: 'material',
         inputResource: 'energy',
@@ -55,10 +58,12 @@ const buildingTypes = {
         id: 'dataStreamEmulator',
         name: 'Data Stream Emulator',
         description: 'Channels Energy to simulate principles and generate Research Data.',
+        // COST: This will need Material, so it must come after the Matter Coalescer.
         cost: { material: 75, energy: 100 },
         consumes: { energy: 0.8 },
         produces: { researchData: 0.3 },
         upkeep: {},
+        // This should be unlocked by a science that itself might cost only energy or be free.
         unlockedByScience: 'sci_basic_emulation',
         type: 'converter',
         outputResource: 'researchData',
@@ -70,16 +75,16 @@ const buildingTypes = {
         id: 'valueRefinery',
         name: 'Value Refinery',
         description: 'Refines Energy into stable Credit units for operational liquidity.',
+        // COST: This will also likely need Material.
         cost: { material: 100, energy: 150 },
         consumes: { energy: 1.0 },
         produces: { credits: 0.5 },
         upkeep: {},
-        unlockedByScience: 'sci_credit_synthesis',
+        unlockedByScience: 'sci_credit_synthesis', // Make sure this science exists
         type: 'converter',
         outputResource: 'credits',
         inputResource: 'energy',
     }
-    // Add more advanced converters and harvesters later
 };
 
 // ... (canAffordBuilding, buyBuilding functions - may need minor tweaks if cost types change) ...
