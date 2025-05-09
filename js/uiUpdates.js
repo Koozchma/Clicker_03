@@ -94,10 +94,10 @@ function updateResourceDisplay() {
 }
 
 function updateInteractionArea() {
-    document.getElementById('clickPowerDisplay').textContent = formatNumber(gameData.clickPower, 0);
-    document.getElementById('totalClicksDisplay').textContent = formatNumber(gameData.totalClicks, 0);
-    document.getElementById('promotionLevelDisplay').textContent = formatNumber(gameData.promotionLevel, 0);
-    document.getElementById('promotionBonusDisplay').textContent = formatNumber(gameData.promotionLevel * gameData.promotionBaseBonus, 0);
+    document.getElementById('clickPowerDisplay').textContent = formatNumber(gameData.clickPower, 0); // Possible line 97
+    document.getElementById('totalClicksDisplay').textContent = formatNumber(gameData.totalClicks, 0); // Possible line
+    document.getElementById('promotionLevelDisplay').textContent = formatNumber(gameData.promotionLevel, 0); // Possible line
+    document.getElementById('promotionBonusDisplay').textContent = formatNumber(gameData.promotionLevel * gameData.promotionBaseBonus, 0); // Possible line
 }
 
 // Helper for canAffordBuilding with dynamic cost updates for UI disabling
