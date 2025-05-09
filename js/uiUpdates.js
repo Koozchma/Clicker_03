@@ -34,25 +34,28 @@ function formatNumber(num, decimals = 2) {
 function updateResourceDisplay() {
     const resources = [
         { name: 'Energy', idPrefix: 'energy', current: gameData.currentEnergy, prodSiphon: gameData.productionRates.energyFromAmbientSiphon, prodBuildings: gameData.productionRates.energyFromHarvesters, upkeepConverters: gameData.upkeepRates.energyForConverters, upkeepSystems: gameData.upkeepRates.energyForOtherSystems, unit: 'e/sec' },
-        { name: 'Material', idPrefix: 'material', current: gameData.material, prodTotal: gameData.productionRates.material, upkeepTotal: 0, unit: 'm/sec' }, // Material typically no passive upkeep
-        { name: 'Research Data', idPrefix: 'research', current: gameData.researchData, prodTotal: gameData.productionRates.researchData, upkeepTotal: gameData.upkeepRates.research || 0, unit: 'r.data/sec' }, // HTML ID for research is 'research'
+        // For Material, prodTotal IS gameData.productionRates.material, which is calculated in buildings.js
+        { name: 'Material', idPrefix: 'material', current: gameData.material, prodTotal: gameData.productionRates.material, upkeepTotal: 0, unit: 'm/sec' },
+        // For Research Data, prodTotal IS gameData.productionRates.researchData
+        { name: 'Research Data', idPrefix: 'research', current: gameData.researchData, prodTotal: gameData.productionRates.researchData, upkeepTotal: gameData.upkeepRates.research || 0, unit: 'r.data/sec' },
+        // For Credits, prodTotal IS gameData.productionRates.credits
         { name: 'Credits', idPrefix: 'credits', current: gameData.credits, prodTotal: gameData.productionRates.credits, upkeepTotal: gameData.upkeepRates.creditsForMaintenance, unit: 'c/sec' }
     ];
 
     resources.forEach(res => {
         const currentVal = Number(res.current) || 0;
-        if(document.getElementById(`current${res.idPrefix.charAt(0).toUpperCase() + res.idPrefix.slice(1)}`)) { // e.g. currentEnergy
-             document.getElementById(`current${res.idPrefix.charAt(0).toUpperCase() + res.idPrefix.slice(1)}`).textContent = formatNumber(currentVal, 2);
-        } else if (res.idPrefix === 'research' && document.getElementById('currentResearch')) { // Specific handling for researchData's HTML ID
-             document.getElementById('currentResearch').textContent = formatNumber(currentVal, 2);
+        const currentDisplayId = res.idPrefix === 'research' ? 'currentResearch' : `current${res.idPrefix.charAt(0).toUpperCase() + res.idPrefix.slice(1)}`;
+        if(document.getElementById(currentDisplayId)) {
+             document.getElementById(currentDisplayId).textContent = formatNumber(currentVal, 2);
         }
-
 
         let totalGrossProduction, totalPotentialUpkeep;
         if (res.name === 'Energy') {
             totalGrossProduction = (Number(res.prodSiphon) || 0) + (Number(res.prodBuildings) || 0);
             totalPotentialUpkeep = (Number(res.upkeepConverters) || 0) + (Number(res.upkeepSystems) || 0);
         } else {
+            // For Material, Research Data, Credits, prodTotal directly comes from gameData.productionRates.RESOURCE
+            // This value is calculated by summing up all relevant converter outputs in buildings.js
             totalGrossProduction = Number(res.prodTotal) || 0;
             totalPotentialUpkeep = Number(res.upkeepTotal) || 0;
         }
@@ -63,6 +66,7 @@ function updateResourceDisplay() {
             netChangeSpan.textContent = formatNumber(netChangePerSecond, 2);
             netChangeSpan.classList.toggle('negative-value', netChangePerSecond < 0);
         }
+        // This displays the totalGrossProduction, which includes output from all relevant converters
         if(document.getElementById(`${res.idPrefix}ProductionRate`)) document.getElementById(`${res.idPrefix}ProductionRate`).textContent = formatNumber(totalGrossProduction, 2);
         if(document.getElementById(`${res.idPrefix}UpkeepRate`)) document.getElementById(`${res.idPrefix}UpkeepRate`).textContent = formatNumber(totalPotentialUpkeep, 2);
     });
@@ -108,7 +112,7 @@ function canAffordBuildingWithAdjustedCost(buildingId) {
  * @param {HTMLElement} container - The HTML element to render the list into.
  */
 function updateBuildingList(container) {
-    container.innerHTML = ''; // Clear previous content
+    container.innerHTML = ''; 
     if (typeof buildingTypes === 'undefined') {
         container.innerHTML = '<p>Error: Construction data not loaded.</p>';
         return;
@@ -117,7 +121,13 @@ function updateBuildingList(container) {
     for (const id in buildingTypes) {
         const building = buildingTypes[id];
         // Filter for construction category OR if it's a harvester (general construction)
-        if (building.category !== 'construction' && building.type !== 'harvester') continue;
+        // OR if it's a material converter (as per user's focus)
+        if (building.category !== 'construction' && building.type !== 'harvester' && building.outputResource !== 'material') {
+            // If you want ALL construction items, just use: if (building.category !== 'construction') continue;
+            // If you want harvesters and material converters under "Construction":
+            if (!(building.category === 'construction' || (building.type === 'harvester' || building.outputResource === 'material'))) continue;
+        }
+
 
         const isUnlocked = !building.unlockedByScience || gameData.unlockedScience[building.unlockedByScience];
         if (!isUnlocked && !(gameData.ownedBuildings[id] > 0)) continue;
@@ -125,8 +135,8 @@ function updateBuildingList(container) {
 
         const adjustedCost = (typeof getAdjustedBuildingCost === 'function') ? getAdjustedBuildingCost(id) : building.cost;
         const itemDiv = document.createElement('div');
-        itemDiv.classList.add('building-item'); // General class for items
-        // ... (rest of itemDiv creation as before, costString, productionString, upkeepString)
+        itemDiv.classList.add('building-item');
+        
         let costString = `Cost: `;
         if (adjustedCost) {
             if(adjustedCost.energy > 0) costString += `${formatNumber(adjustedCost.energy,0)}E `;
@@ -183,7 +193,7 @@ function updateBuildingList(container) {
  * @param {HTMLElement} container - The HTML element to render the list into.
  */
 function updateScienceList(container) {
-    container.innerHTML = ''; // Clear previous content
+    container.innerHTML = ''; 
     if (typeof scienceTree === 'undefined') {
         container.innerHTML = '<p>Error: Research data not loaded.</p>';
         return;
@@ -197,12 +207,14 @@ function updateScienceList(container) {
     });
 
     for (const id of sortedScienceIds) {
+        // Filter for research category if building.category is used for research items too
+        // For now, assuming all scienceTree items belong to 'research' view
         hasVisibleScience = true;
         const tech = scienceTree[id];
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('science-item');
         if (gameData.unlockedScience[id]) itemDiv.classList.add('is-unlocked');
-        // ... (rest of itemDiv creation as before, costString, prereqString) ...
+        
         let costString = `Cost: `;
         if(tech.cost.researchData > 0) costString += `${formatNumber(tech.cost.researchData,0)}RData `;
         if(tech.cost.energy > 0) costString += `${formatNumber(tech.cost.energy,0)}E `;
@@ -258,14 +270,81 @@ function updateScienceList(container) {
  * @param {HTMLElement} container - The HTML element to render into.
  */
 function updateBankingList(container) {
-    container.innerHTML = '<p>Banking & Finance systems are under development. Check back for advanced credit management and economic projects.</p>';
-    // Later, this will list banking-related buildings/upgrades similar to updateBuildingList
+    container.innerHTML = ''; // Clear previous content
+    if (typeof buildingTypes === 'undefined') {
+        container.innerHTML = '<p>Error: Banking data not loaded.</p>';
+        return;
+    }
+    let hasVisibleBankingItems = false;
+    for (const id in buildingTypes) {
+        const building = buildingTypes[id];
+        // Filter for banking category
+        if (building.category !== 'banking') continue;
+
+        const isUnlocked = !building.unlockedByScience || gameData.unlockedScience[building.unlockedByScience];
+        if (!isUnlocked && !(gameData.ownedBuildings[id] > 0)) continue;
+        hasVisibleBankingItems = true;
+
+        // Re-use building item display logic for banking structures
+        const adjustedCost = (typeof getAdjustedBuildingCost === 'function') ? getAdjustedBuildingCost(id) : building.cost;
+        const itemDiv = document.createElement('div');
+        itemDiv.classList.add('building-item'); // Can reuse 'building-item' or create 'banking-item'
+        
+        let costString = `Cost: `;
+        if (adjustedCost) {
+            if(adjustedCost.energy > 0) costString += `${formatNumber(adjustedCost.energy,0)}E `;
+            if(adjustedCost.material > 0) costString += `${formatNumber(adjustedCost.material,0)}M `;
+            if(adjustedCost.credits > 0) costString += `${formatNumber(adjustedCost.credits,0)}C`;
+            if (costString === `Cost: ` && (adjustedCost.energy === 0 || adjustedCost.material === 0 || adjustedCost.credits === 0)) costString = 'Cost: Free';
+        } else { costString = 'Cost: N/A'; }
+
+        let productionString = 'Effect: '; // Changed from "Produces" for banking
+        if(building.produces) {
+            if(building.produces.credits) productionString += `+${formatNumber(building.produces.credits,2)}C/s `;
+            // Add other potential banking effects here
+        } else {
+            productionString = 'No direct production output listed.';
+        }
+        if (building.description.includes("liquidity") || building.description.includes("funding")) { // Example
+             // productionString can be more descriptive for banking items.
+        }
+
+
+        let upkeepString = 'Requires: ';
+        if(building.consumes && building.consumes.energy > 0) {
+            upkeepString += `${formatNumber(building.consumes.energy,2)}E/s (to operate) `;
+        }
+        if(building.upkeep) {
+            if(building.upkeep.energy > 0) upkeepString += `${formatNumber(building.upkeep.energy,2)}E/s (maintenance) `;
+            if(building.upkeep.credits > 0) upkeepString += `${formatNumber(building.upkeep.credits,2)}C/s (maintenance) `;
+        }
+        if (upkeepString === 'Requires: ') upkeepString = 'No operational requirements.';
+
+        itemDiv.innerHTML = `
+            <h3>${building.name} (Owned: ${formatNumber(gameData.ownedBuildings[id] || 0, 0)}${building.maxOwned ? '/' + building.maxOwned : ''})</h3>
+            <p>${building.description}</p>
+            <p class="cost-line">${costString}</p>
+            <p>${productionString}</p>
+            <p>${upkeepString}</p>
+            <button id="buy-${id}" class="build-button">Activate System</button> `;
+        container.appendChild(itemDiv);
+        const button = document.getElementById(`buy-${id}`);
+        if (button) {
+            button.onclick = () => {
+                if (typeof buyBuilding === 'function') buyBuilding(id); // Uses the same buyBuilding logic
+                else console.error("buyBuilding function is not defined!");
+            };
+            button.disabled = !isUnlocked || !canAffordBuildingWithAdjustedCost(id) || (building.maxOwned && (gameData.ownedBuildings[id] || 0) >= building.maxOwned);
+        }
+    }
+    if (!hasVisibleBankingItems) {
+         container.innerHTML = '<p>Banking & Finance systems are under development or require further research.</p>';
+    }
 }
 
 
 /**
  * Updates the category display area based on gameData.activeCategoryView.
- * Manages active button state and calls the appropriate list rendering function.
  */
 function updateCategoryDisplay() {
     const categoryTitleElement = document.getElementById('categoryTitle');
@@ -281,14 +360,12 @@ function updateCategoryDisplay() {
         return;
     }
 
-    // Update active button state
     for (const category in navButtons) {
         if (navButtons[category]) {
             navButtons[category].classList.toggle('active', gameData.activeCategoryView === category);
         }
     }
 
-    // Update title and render content
     switch (gameData.activeCategoryView) {
         case 'construction':
             categoryTitleElement.textContent = 'Construction & Automation';
@@ -300,7 +377,7 @@ function updateCategoryDisplay() {
             break;
         case 'banking':
             categoryTitleElement.textContent = 'Banking & Finance';
-            updateBankingList(categoryListContainer); // Placeholder
+            updateBankingList(categoryListContainer); 
             break;
         default:
             categoryTitleElement.textContent = 'Select a Category';
@@ -308,14 +385,13 @@ function updateCategoryDisplay() {
     }
 }
 
-
 /**
  * Calls all individual UI update functions to refresh the entire game display.
  */
 function updateAllUIDisplays() {
     updateResourceDisplay();
     updateInteractionArea();
-    updateCategoryDisplay(); // Replaces direct calls to updateBuildingList & updateScienceList
+    updateCategoryDisplay(); 
 }
 
 // Log to confirm script is loaded
