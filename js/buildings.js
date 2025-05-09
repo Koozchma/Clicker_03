@@ -2,32 +2,12 @@
 
 // Defines all building types (Harvesters and Converters) in the game.
 const buildingTypes = {
-    // THIS IS THE BUILDING FROM YOUR SCREENSHOT, NOW MODIFIED TO PRODUCE MATERIAL
-    'basicEnergySiphon': {
-        id: 'basicEnergySiphon',
-        name: 'Basic Energy Siphon', // Keeping name as per your reference
-        description: 'A foundational structure that now converts Energy directly into usable Material at a steady rate.',
-        cost: { material: 0, credits: 0, energy: 25 }, // Original cost
-        consumes: { energy: 0.5 },      // <<<< ADDED: Energy consumption to produce material
-        produces: { material: 1 },    // <<<< CHANGED: Now produces 1 Material/sec
-        upkeep: { energy: 0.01 },       // This can be its base operational upkeep on top of consumption
-        unlockedByScience: null,        // AVAILABLE BY DEFAULT
-        type: 'converter',              // <<<< CHANGED: Now a converter
-        outputResource: 'material',     // <<<< ADDED
-        inputResource: 'energy',        // <<<< ADDED
-        category: 'construction',
-        maxOwned: 5,                    // Original maxOwned
-    },
-
-    // INITIAL, SLOWER MATERIAL CONVERTER (if you want a different starting path)
-    // This one is also default available and costs only energy.
-    // You might want to make 'basicEnergySiphon' require research if this one exists.
-    // For now, both are default to ensure one works as you expect.
+    // --- CONSTRUCTION & AUTOMATION (Material Focus) ---
     'basicMatterAssembler': {
         id: 'basicMatterAssembler',
         name: 'Basic Matter Assembler',
-        description: 'A rudimentary converter that coalesces raw Energy into basic structural Material. Slower but essential for initial expansion if other methods are locked.',
-        cost: { material: 0, credits: 0, energy: 40 },
+        description: 'A rudimentary converter that coalesces raw Energy into basic structural Material. The first step to automated material gain.',
+        cost: { material: 0, credits: 0, energy: 40 }, // Energy only
         consumes: { energy: 0.25 },
         produces: { material: 0.1 },    // Produces 0.1 Material/sec
         upkeep: {},
@@ -35,25 +15,100 @@ const buildingTypes = {
         type: 'converter',
         outputResource: 'material',
         inputResource: 'energy',
-        category: 'construction',
+        category: 'construction', // Belongs to Construction
         maxOwned: 10,
     },
+    'industrialFabricator': { // More advanced material production
+        id: 'industrialFabricator',
+        name: 'Industrial Fabricator',
+        description: 'An advanced Material converter. Offers superior efficiency in transmuting Energy into complex Materials.',
+        cost: { material: 200, energy: 0, credits: 50 }, // Requires previously made material
+        consumes: { energy: 2.5 },
+        produces: { material: 1.5 },
+        upkeep: { credits: 0.2 },
+        unlockedByScience: 'sci_advanced_material_conversion', // Requires research
+        type: 'converter',
+        outputResource: 'material',
+        inputResource: 'energy',
+        category: 'construction',
+    },
 
-    // ENERGY HARVESTER - Needed for energy income
+    // --- RESEARCH & DEVELOPMENT (Research Data Focus) ---
+    'rudimentaryDataScribe': { // NEW - Basic Research Data Producer
+        id: 'rudimentaryDataScribe',
+        name: 'Rudimentary Data Scribe',
+        description: 'An elementary device that translates raw Energy fluctuations into basic Research Data points, initiating scientific understanding.',
+        cost: { material: 0, credits: 0, energy: 45 }, // Energy only
+        consumes: { energy: 0.3 },
+        produces: { researchData: 0.05 }, // Produces 0.05 Research Data/sec (slower start for research)
+        upkeep: {},
+        unlockedByScience: null,        // AVAILABLE BY DEFAULT
+        type: 'converter',
+        outputResource: 'researchData',
+        inputResource: 'energy',
+        category: 'research', // Belongs to Research
+        maxOwned: 10,
+    },
+    'dataStreamEmulator': { // More advanced research data production
+        id: 'dataStreamEmulator',
+        name: 'Data Stream Emulator',
+        description: 'A Tier 1 Research converter. Channels Energy to emulate universal principles, generating vital Research Data at a higher rate.',
+        cost: { material: 75, energy: 100 }, // Requires Material
+        consumes: { energy: 0.8 },
+        produces: { researchData: 0.3 },
+        upkeep: {},
+        unlockedByScience: 'sci_unlock_research_converters', // Example: new science to unlock this
+        type: 'converter',
+        outputResource: 'researchData',
+        inputResource: 'energy',
+        category: 'research',
+    },
+
+    // --- BANKING & FINANCE (Credits Focus) ---
+    'basicValueNode': { // NEW - Basic Credits Producer
+        id: 'basicValueNode',
+        name: 'Basic Value Node',
+        description: 'A simple synthesizer that refines ambient Energy signatures into a rudimentary form of Credits, establishing basic economic potential.',
+        cost: { material: 0, credits: 0, energy: 50 }, // Energy only
+        consumes: { energy: 0.35 },
+        produces: { credits: 0.02 }, // Produces 0.02 Credits/sec (credits are valuable, start slow)
+        upkeep: {},
+        unlockedByScience: null,        // AVAILABLE BY DEFAULT
+        type: 'converter',
+        outputResource: 'credits',
+        inputResource: 'energy',
+        category: 'banking', // Belongs to Banking
+        maxOwned: 10,
+    },
+    'valueRefinery': { // More advanced credit production
+        id: 'valueRefinery',
+        name: 'Value Refinery',
+        description: 'A Tier 1 Credit synthesizer. Refines Energy into stable Credit units for economic operations.',
+        cost: { material: 100, energy: 150 }, // Requires Material
+        consumes: { energy: 1.0 },
+        produces: { credits: 0.5 },
+        upkeep: {},
+        unlockedByScience: 'sci_unlock_banking_converters', // Example: new science to unlock this
+        type: 'converter',
+        outputResource: 'credits',
+        inputResource: 'energy',
+        category: 'banking',
+    },
+
+    // --- ENERGY HARVESTERS (Still needed, but unlocked via research, and shown in Construction) ---
+    // The player will rely on manual siphon and ambient energy initially.
     'microSiphonRelay': {
         id: 'microSiphonRelay',
         name: 'Micro-Siphon Relay',
-        description: 'A small, automated relay that passively draws and stabilizes trace amounts of ambient Energy.',
-        cost: { material: 5, credits: 0, energy: 30 },
-        production: { energy: 0.15 }, // Produces Energy
+        description: 'A small, automated relay that passively draws and stabilizes trace amounts of ambient Energy. Requires initial research.',
+        cost: { material: 20, credits: 0, energy: 75 }, // Requires some material now
+        production: { energy: 0.15 },
         upkeep: { energy: 0.01 },
-        unlockedByScience: 'sci_unlock_converters', // Requires research
+        unlockedByScience: 'sci_unlock_energy_harvesters', // Example: new science to unlock this
         type: 'harvester',
-        category: 'construction',
+        category: 'construction', // Still built under construction
         maxOwned: 5,
     },
-
-    // TIER 1 ADVANCED ENERGY HARVESTER
     'stellarCollector': {
         id: 'stellarCollector',
         name: 'Stellar Radiation Collector',
@@ -65,55 +120,10 @@ const buildingTypes = {
         type: 'harvester',
         category: 'construction',
     },
-
-    // TIER 1 CONVERTERS
-    'dataStreamEmulator': {
-        id: 'dataStreamEmulator',
-        name: 'Data Stream Emulator',
-        description: 'A Tier 1 Research converter. Channels Energy to emulate universal principles, generating vital Research Data.',
-        cost: { material: 10, energy: 100 },
-        consumes: { energy: 0.8 },
-        produces: { researchData: 0.3 },
-        upkeep: {},
-        unlockedByScience: 'sci_unlock_converters',
-        type: 'converter',
-        outputResource: 'researchData',
-        inputResource: 'energy',
-        category: 'research',
-    },
-    'valueRefinery': {
-        id: 'valueRefinery',
-        name: 'Value Refinery',
-        description: 'A Tier 1 Credit synthesizer. Refines Energy into stable Credit units for economic operations.',
-        cost: { material: 15, energy: 125 },
-        consumes: { energy: 1.0 },
-        produces: { credits: 0.5 },
-        upkeep: {},
-        unlockedByScience: 'sci_unlock_converters',
-        type: 'converter',
-        outputResource: 'credits',
-        inputResource: 'energy',
-        category: 'banking',
-    },
-
-    // TIER 2+ MATERIAL CONVERTER
-    'industrialFabricator': {
-        id: 'industrialFabricator',
-        name: 'Industrial Fabricator',
-        description: 'An advanced Material converter. Offers superior efficiency in transmuting Energy into complex Materials.',
-        cost: { material: 200, energy: 0, credits: 50 },
-        consumes: { energy: 2.5 },
-        produces: { material: 1.5 },
-        upkeep: { credits: 0.2 },
-        unlockedByScience: 'sci_advanced_material_conversion',
-        type: 'converter',
-        outputResource: 'material',
-        inputResource: 'energy',
-        category: 'construction',
-    },
 };
 
 // --- canAffordBuilding function ---
+// (Assumes getAdjustedBuildingCost is globally available from science.js)
 function canAffordBuilding(buildingId) {
     const building = buildingTypes[buildingId];
     if (!building) {
@@ -215,7 +225,6 @@ function calculateTotalProductionAndUpkeep() {
                 const energyNeededForThisType = (building.consumes && building.consumes.energy || 0) * count;
                 totalPotentialEnergyDemandFromConverters += energyNeededForThisType;
 
-                // This is where production rates are aggregated
                 if (building.produces) {
                     if (building.outputResource === 'material' && building.produces.material !== undefined) {
                         gameData.productionRates.material += building.produces.material * count;
@@ -227,9 +236,8 @@ function calculateTotalProductionAndUpkeep() {
                         gameData.productionRates.credits += building.produces.credits * count;
                         gameData.consumptionRates.energyByCreditSynthesizers += energyNeededForThisType;
                     }
-                    // If the converter also directly produces energy (uncommon for this model but possible)
-                    if (building.produces.energy !== undefined) {
-                         gameData.productionRates.energyFromHarvesters += building.produces.energy * count; // Or a new category like energyFromConverters
+                    if (building.produces.energy !== undefined) { // Should not happen for converters usually
+                         gameData.productionRates.energyFromHarvesters += building.produces.energy * count;
                     }
                 }
                 if (building.upkeep && building.upkeep.credits) {
