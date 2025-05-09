@@ -1,27 +1,23 @@
 // js/eventHandlers.js
+document.addEventListener('DOMContentLoaded', function() {
+    const mineEnergyButton = document.getElementById('mineEnergyButton');
+    if (mineEnergyButton) {
+        mineEnergyButton.addEventListener('click', function() {
+            if (isNaN(gameData.currentEnergy)) gameData.currentEnergy = 0;
+            if (isNaN(gameData.clickPower)) gameData.clickPower = gameData.rawEnergyPerClick || 1;
 
-document.getElementById('mineEnergyButton').addEventListener('click', function() {
-    // Ensure gameData.clickPower is a number
-    const clickPower = Number(gameData.clickPower) || 1; // Default to 1 if NaN or undefined
+            gameData.currentEnergy += gameData.clickPower; // Click power now directly adds energy
+            gameData.totalClicks++;
 
-    // Ensure gameData.currentEnergy starts as a number or is reset if it became NaN
-    if (isNaN(gameData.currentEnergy)) {
-        // console.warn("currentEnergy was NaN before click, resetting to 0");
-        gameData.currentEnergy = 0;
+            if (gameData.totalClicks > 0 && gameData.totalClicks % gameData.gameSettings.clicksForPromotion === 0) {
+                gameData.promotionLevel++;
+                // Promotions could upgrade rawEnergyPerClick or add a bonus to clickPower
+                gameData.clickPower += gameData.promotionBaseBonus;
+                console.log(`Cognitive Surge! Promotion Level: ${gameData.promotionLevel}, Siphon Strength: ${gameData.clickPower}`);
+            }
+            updateAllUIDisplays();
+        });
+    } else {
+        console.error("Mine Energy Button not found!");
     }
-    gameData.currentEnergy += clickPower;
-    gameData.totalClicks++;
-
-    // Promotion Check
-    if (gameData.totalClicks % gameData.gameSettings.clicksForPromotion === 0) {
-        gameData.promotionLevel++;
-        gameData.clickPower += gameData.promotionBaseBonus; // Each promotion adds +1 base
-        console.log(`Promotion! Level: ${gameData.promotionLevel}, Click Power: ${gameData.clickPower}`);
-        // Add a visual cue for promotion if desired
-    }
-
-    updateAllUIDisplays();
 });
-
-// Initial setup of building and science buttons will be handled by their respective UI update functions
-// as they populate the lists.
