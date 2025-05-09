@@ -1,51 +1,55 @@
 // js/gameData.js
 const gameData = {
     // Core Resources
-    currentEnergy: 0,
-    credits: 0,
-    material: 0,
-    research: 0,
+    currentEnergy: 10, // Start with a little raw energy
+    rawEnergyPerClick: 1, // Base energy from manual siphoning
+    ambientEnergySiphonRate: 0.01, // Base passive % increase of currentEnergy, e.g., 0.01 = 1% per second
 
-    // Clicking
-    clickPower: 1,
+    material: 0,
+    researchData: 0, // Renamed from 'research'
+    credits: 0,
+
+    // Clicking & Manual Siphoning
+    clickPower: 1, // Effective energy per click (can be upgraded)
     totalClicks: 0,
     promotionLevel: 0,
-    promotionBaseBonus: 1, // Each promotion adds +1 to clickPower
-
-    // Energy Vault
-    vaultMultiplierPercent: 0.1, // Represents 1.01 factor (0.1% actual increase on current value per second)
-                                 // The actual math will be currentEnergy * (1 + vaultMultiplierPercent / 100)
-                                 // Or simply currentEnergy * 1.001 (if vaultMultiplierPercent is 0.1)
+    promotionBaseBonus: 1,
 
     // Production & Upkeep Rates (calculated each tick)
     productionRates: {
-        energy: 0, // Passive from vault, separate from building production
-        credits: 0,
+        energyFromHarvesters: 0, // Energy from dedicated harvester buildings
+        energyFromAmbientSiphon: 0, // Energy from the base passive % gain
         material: 0,
-        research: 0,
-    },
-    upkeepRates: {
-        energy: 0,
+        researchData: 0,
         credits: 0,
-        material: 0, // Material might not have upkeep, but good to have
-        research: 0,
     },
+    upkeepRates: { // Energy consumed by converters & other systems
+        energyForConverters: 0,
+        energyForOtherSystems: 0, // For future use
+        creditsForMaintenance: 0, // For future use
+        // Material upkeep is usually for specific building *actions* rather than passive, handled by consumption logic
+    },
+    consumptionRates: { // Resources consumed to produce others (e.g. energy by converters)
+        energyByMaterialConverters: 0,
+        energyByResearchEmulators: 0,
+        energyByCreditSynthesizers: 0,
+    },
+
 
     // Game State
     lastTick: Date.now(),
     gameSettings: {
-        tickRate: 1000, // milliseconds
+        tickRate: 1000,
         clicksForPromotion: 10,
     },
 
-    // Collections for buildings and science
-    ownedBuildings: {}, // e.g., { 'minerMk1': 2, 'labBasic': 1 }
-    unlockedScience: {}, // e.g., { 'sci_basicMining': true, 'sci_advChemistry': false }
+    ownedBuildings: {}, // Will store counts of Harvesters and Converters
+    unlockedScience: {},
+    buildingCostModifier: 1,
+    // Add new fields for special projects or global states if needed
 };
 
-// Function to get the actual vault growth factor
-function getVaultGrowthFactor() {
-    // Ensure vaultMultiplierPercent is a number
-    const multiplierPercent = Number(gameData.vaultMultiplierPercent) || 0;
-    return 1 + (multiplierPercent / 100);
+// Renamed for clarity, previously getVaultGrowthFactor
+function getAmbientSiphonFactor() {
+    return 1 + (gameData.ambientEnergySiphonRate); // If 0.01, it's 1 + 0.01 = 1.01
 }
