@@ -44,5 +44,7 @@ const gameData = {
 
 // Function to get the actual vault growth factor
 function getVaultGrowthFactor() {
-    return 1 + (gameData.vaultMultiplierPercent / 100);
+    // Ensure vaultMultiplierPercent is a number
+    const multiplierPercent = Number(gameData.vaultMultiplierPercent) || 0;
+    return 1 + (multiplierPercent / 100);
 }
