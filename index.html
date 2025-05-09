@@ -17,57 +17,30 @@
             <div class="resource">
                 <span>Energy:</span>
                 <span id="currentEnergy">0</span>
-                (<span id="energyNetRate">0.00</span> e/sec)
-                | Vault Bonus: <span id="vaultBonusRate">0.00</span> e/sec
+                | <span id="energyNetChange">0.00</span> e/sec
+                | (<span id="energyProductionRate">0.00</span> - <span id="energyUpkeepRate">0.00</span>) e/sec
             </div>
             <div class="resource">
                 <span>Credits:</span>
                 <span id="currentCredits">0</span>
-                (<span id="creditsNetRate">0.00</span> c/sec)
+                | <span id="creditsNetChange">0.00</span> c/sec
+                | (<span id="creditsProductionRate">0.00</span> - <span id="creditsUpkeepRate">0.00</span>) c/sec
             </div>
             <div class="resource">
                 <span>Material:</span>
                 <span id="currentMaterial">0</span>
-                (<span id="materialNetRate">0.00</span> m/sec)
+                | <span id="materialNetChange">0.00</span> m/sec
+                | (<span id="materialProductionRate">0.00</span> - <span id="materialUpkeepRate">0.00</span>) m/sec
             </div>
             <div class="resource">
                 <span>Research:</span>
                 <span id="currentResearch">0</span>
-                (<span id="researchNetRate">0.00</span> r/sec)
+                | <span id="researchNetChange">0.00</span> r/sec
+                | (<span id="researchProductionRate">0.00</span> - <span id="researchUpkeepRate">0.00</span>) r/sec
             </div>
         </section>
 
-        <section id="interaction-area">
-            <h2>Operations</h2>
-            <button id="mineEnergyButton">Mine Energy (Click Power: <span id="clickPowerDisplay">1</span>)</button>
-            <p>Total Clicks: <span id="totalClicksDisplay">0</span></p>
-            <p>Promotion Level: <span id="promotionLevelDisplay">0</span> (+<span id="promotionBonusDisplay">0</span> Energy/Click)</p>
-        </section>
-
-        <section id="energy-vault-display">
-            <h2>Energy Vault</h2>
-            <p>Energy in vault passively increases by <span id="vaultMultiplierDisplay">1.00</span>% per second.</p>
-            <p>Current passive generation from vault: <span id="vaultPassiveGenerationDisplay">0.00</span> e/sec.</p>
-        </section>
-
-        <div class="game-sections-wrapper">
-            <section id="buildings-automation-display">
-                <h2>Buildings & Automation</h2>
-                <div id="building-list">
-                    </div>
-            </section>
-
-            <section id="science-tree-display">
-                <h2>Science Tree</h2>
-                <div id="science-list">
-                    </div>
-            </section>
         </div>
-
-        <footer>
-            <p>Energy Clicker v0.1</p>
-        </footer>
-    </div>
 
     <script src="js/gameData.js"></script>
     <script src="js/buildings.js"></script>
