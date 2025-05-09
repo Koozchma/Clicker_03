@@ -106,32 +106,26 @@ function canAffordBuildingWithAdjustedCost(buildingId) {
 }
 
 /**
- * Creates the "Output" string for a building card, formatted as "Capacity: X Resource/sec (Production)".
+ * Creates the "Output" string for a building card.
  * @param {object} building - The building object from buildingTypes.
  * @returns {string} The formatted output string.
  */
 function getBuildingOutputString(building) {
     let outputParts = [];
     if (building.produces) {
-        // CORRECTED CHECK: Ensure property exists and is not just implicitly 0.
         if (building.produces.energy !== undefined && building.produces.energy !== 0) outputParts.push(`${formatNumber(building.produces.energy, 2)} Energy/sec`);
         if (building.produces.material !== undefined && building.produces.material !== 0) outputParts.push(`${formatNumber(building.produces.material, 2)} Material/sec`);
         if (building.produces.credits !== undefined && building.produces.credits !== 0) outputParts.push(`${formatNumber(building.produces.credits, 2)} Credits/sec`);
         if (building.produces.researchData !== undefined && building.produces.researchData !== 0) outputParts.push(`${formatNumber(building.produces.researchData, 2)} RData/sec`);
     }
-    
-    // If it's a harvester and its primary production is energy (even if other 'produces' are zero or undefined)
     if (building.type === 'harvester' && building.production && building.production.energy !== undefined && building.production.energy !== 0 && outputParts.length === 0) {
         outputParts.push(`${formatNumber(building.production.energy, 2)} Energy/sec`);
     }
-
-
     if (outputParts.length > 0) {
         return `Capacity: ${outputParts.join(', ')} (Production)`;
     }
-    return 'Output: None or Passive Effect'; // More accurate fallback
+    return 'Output: None or Passive Effect';
 }
-
 
 /**
  * Updates the list of buildings displayed in the UI for the active category.
@@ -201,6 +195,7 @@ function updateBuildingList(container) {
 
 /**
  * Updates the list of research items displayed in the UI.
+ * Only shows research items whose prerequisites are met or have no prerequisites.
  * @param {HTMLElement} container - The HTML element to render the list into.
  */
 function updateScienceList(container) {
@@ -218,8 +213,25 @@ function updateScienceList(container) {
     });
 
     for (const id of sortedScienceIds) {
-        hasVisibleScience = true;
         const tech = scienceTree[id];
+
+        // *** NEW LOGIC TO FILTER DISPLAY BASED ON PREREQUISITES ***
+        let prerequisitesMet = true;
+        if (tech.prerequisites && tech.prerequisites.length > 0) {
+            for (const prereqId of tech.prerequisites) {
+                if (!gameData.unlockedScience[prereqId]) {
+                    prerequisitesMet = false;
+                    break;
+                }
+            }
+        }
+        // Only display if already unlocked OR prerequisites are met (or no prerequisites)
+        if (!gameData.unlockedScience[id] && !prerequisitesMet) {
+            continue; // Skip rendering this tech if its prerequisites are not met and it's not yet unlocked
+        }
+        // *** END OF NEW LOGIC ***
+
+        hasVisibleScience = true;
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('science-item');
         if (gameData.unlockedScience[id]) itemDiv.classList.add('is-unlocked');
@@ -231,22 +243,22 @@ function updateScienceList(container) {
         if(tech.cost.credits > 0) costString += `${formatNumber(tech.cost.credits,0)}C`;
         if (costString === `Cost: ` && (tech.cost.researchData === 0 || tech.cost.energy === 0 || tech.cost.material === 0 || tech.cost.credits === 0)) costString = 'Cost: Free';
 
-        let prereqString = 'Prerequisites: ';
+        let prereqDisplayString = 'Prerequisites: '; // For display purposes
         if (tech.prerequisites && tech.prerequisites.length > 0) {
-            prereqString += tech.prerequisites.map(pId => {
+            prereqDisplayString += tech.prerequisites.map(pId => {
                 const prereqTech = scienceTree[pId];
-                const met = gameData.unlockedScience[pId];
+                const met = gameData.unlockedScience[pId]; // Check if this specific prereq is met
                 return prereqTech ? `<span class="${met ? 'met' : 'unmet'}">${prereqTech.name}</span>` : 'Unknown';
             }).join(', ');
         } else {
-            prereqString += 'None';
+            prereqDisplayString += 'None';
         }
         
         itemDiv.innerHTML = `
             <h3>${tech.name}</h3>
             <p>${tech.description}</p>
             <p class="cost-line">${costString}</p>
-            <p class="prereq-line">${prereqString}</p>
+            <p class="prereq-line">${prereqDisplayString}</p>
             <button id="research-${id}" class="research-button">
                 ${gameData.unlockedScience[id] ? 'Researched' : 'Initiate Research'}
             </button>
@@ -254,24 +266,20 @@ function updateScienceList(container) {
         container.appendChild(itemDiv);
         const button = document.getElementById(`research-${id}`);
         if (button) {
-            if (gameData.unlockedScience[id]) button.disabled = true;
-            else {
+            if (gameData.unlockedScience[id]) {
+                button.disabled = true;
+            } else {
                 button.onclick = () => {
                     if (typeof researchTech === 'function') researchTech(id);
                     else console.error("researchTech function is not defined!");
                 };
-                let canResearch = (typeof canAffordScience === 'function') ? canAffordScience(id) : false;
-                if (tech.prerequisites) {
-                    for (const prereqId of tech.prerequisites) {
-                        if (!gameData.unlockedScience[prereqId]) { canResearch = false; break; }
-                    }
-                }
-                button.disabled = !canResearch;
+                // Affordability check is still needed for the button's disabled state
+                button.disabled = !canAffordScience(id); // prerequisitesMet is already handled by the display filter
             }
         }
     }
     if (!hasVisibleScience) {
-        container.innerHTML = '<p>No research projects available or defined.</p>';
+        container.innerHTML = '<p>No research projects currently available. Advance further to unlock new possibilities.</p>';
     }
 }
 
@@ -291,7 +299,22 @@ function updateBankingList(container) {
         if (building.category !== 'banking') continue; 
 
         const isUnlocked = !building.unlockedByScience || gameData.unlockedScience[building.unlockedByScience];
-        if (!isUnlocked && !(gameData.ownedBuildings[id] > 0)) continue;
+        // Only display if unlocked by science, or if it has no science requirement (like basic starters)
+        if (!isUnlocked && building.unlockedByScience && !(gameData.ownedBuildings[id] > 0) ) {
+             continue;
+        }
+        // If it has no science requirement, it should always be considered for display
+        if (building.unlockedByScience && !isUnlocked && !(gameData.ownedBuildings[id] > 0)) {
+            // This condition was a bit complex, simplify: if it needs a science unlock and it's not unlocked,
+            // and we don't own any, then skip.
+            // If it has NO science requirement (unlockedByScience is null), it should pass this.
+        } else if (building.unlockedByScience && !isUnlocked && !gameData.ownedBuildings[id]) {
+            // If it requires science, is not unlocked, and we don't own any, skip.
+            // This allows default items (unlockedByScience: null) to show.
+            if (building.unlockedByScience !== null) continue;
+        }
+
+
         hasVisibleBankingItems = true;
 
         const adjustedCost = (typeof getAdjustedBuildingCost === 'function') ? getAdjustedBuildingCost(id) : building.cost;
