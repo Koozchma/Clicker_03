@@ -41,17 +41,11 @@ function updateResourceDisplay() {
 
     resources.forEach(res => {
         const currentVal = Number(res.current) || 0;
-        // Correctly forms ID like 'currentEnergy', 'currentMaterial', etc.
-        // Special case for 'currentResearch' due to historical ID.
         const currentDisplayId = res.idPrefix === 'research' ? 'currentResearch' : `current${res.idPrefix.charAt(0).toUpperCase() + res.idPrefix.slice(1)}`;
         const currentDisplayElement = document.getElementById(currentDisplayId);
         if(currentDisplayElement) {
              currentDisplayElement.textContent = formatNumber(currentVal, 2);
-        } else {
-            // This console.warn can help catch if an ID is unexpectedly missing from the HTML
-            // console.warn(`UI Update: Element with ID '${currentDisplayId}' not found for resource '${res.name}'.`);
         }
-
 
         let totalGrossProduction, totalPotentialUpkeep;
         if (res.name === 'Energy') {
@@ -105,7 +99,7 @@ function canAffordBuildingWithAdjustedCost(buildingId) {
     const building = buildingTypes[buildingId];
     if (!building) return false;
     const costToConsider = (typeof getAdjustedBuildingCost === 'function') ? getAdjustedBuildingCost(buildingId) : building.cost;
-    if (!costToConsider) return false; // Should not happen if building & getAdjustedBuildingCost are valid
+    if (!costToConsider) return false;
     return gameData.currentEnergy >= (costToConsider.energy || 0) &&
            gameData.material >= (costToConsider.material || 0) &&
            gameData.credits >= (costToConsider.credits || 0);
@@ -119,15 +113,19 @@ function canAffordBuildingWithAdjustedCost(buildingId) {
 function getBuildingOutputString(building) {
     let outputParts = [];
     if (building.produces) {
-        if (building.produces.energy) outputParts.push(`${formatNumber(building.produces.energy, 2)} Energy/sec`);
-        if (building.produces.material) outputParts.push(`${formatNumber(building.produces.material, 2)} Material/sec`);
-        if (building.produces.credits) outputParts.push(`${formatNumber(building.produces.credits, 2)} Credits/sec`);
-        if (building.produces.researchData) outputParts.push(`${formatNumber(building.produces.researchData, 2)} RData/sec`);
+        if (building.produces.energy !== undefined) outputParts.push(`${formatNumber(building.produces.energy, 2)} Energy/sec`);
+        if (building.produces.material !== undefined) outputParts.push(`${formatNumber(building.produces.material, 2)} Material/sec`);
+        if (building.produces.credits !== undefined) outputParts.push(`${formatNumber(building.produces.credits, 2)} Credits/sec`);
+        if (building.produces.researchData !== undefined) outputParts.push(`${formatNumber(building.produces.researchData, 2)} RData/sec`);
     }
     if (outputParts.length > 0) {
         return `Capacity: ${outputParts.join(', ')} (Production)`;
     }
-    return 'Output: None'; // Or "Effect: [Description]" for non-production buildings
+    // If no 'produces' object or it's empty, it's not primarily a production building for these resources.
+    // Could be a harvester with only 'production.energy' or a special building.
+    // If it's a harvester and only produces energy, it's already handled above.
+    // For other non-producing buildings, or if 'produces' is truly empty:
+    return 'Output: Special or None';
 }
 
 
@@ -217,7 +215,6 @@ function updateScienceList(container) {
     });
 
     for (const id of sortedScienceIds) {
-        // Assuming all science items are displayed under the 'research' category view
         hasVisibleScience = true;
         const tech = scienceTree[id];
         const itemDiv = document.createElement('div');
@@ -241,21 +238,12 @@ function updateScienceList(container) {
         } else {
             prereqString += 'None';
         }
-
-        // Displaying building output if the research unlocks a building that produces something
-        let researchOutputEffect = '';
-        if (tech.effects && buildingTypes[id.replace('sci_unlock_', '').replace('sci_','')]){ // Heuristic to find related building
-            // This is a simplification; a more robust way would be to have 'unlocksBuilding: buildingId' in scienceTree
-            // For now, this is a placeholder. You'd need a better way to link tech to building output.
-        }
-
-
+        
         itemDiv.innerHTML = `
             <h3>${tech.name}</h3>
             <p>${tech.description}</p>
             <p class="cost-line">${costString}</p>
             <p class="prereq-line">${prereqString}</p>
-            ${researchOutputEffect} 
             <button id="research-${id}" class="research-button">
                 ${gameData.unlockedScience[id] ? 'Researched' : 'Initiate Research'}
             </button>
@@ -373,9 +361,8 @@ function updateCategoryDisplay() {
             navButtons[category].classList.toggle('active', gameData.activeCategoryView === category);
         }
     }
-
-    // Clear previous content before rendering new list
-    categoryListContainer.innerHTML = ''; 
+    
+    categoryListContainer.innerHTML = ''; // Clear previous content before rendering new list
 
     switch (gameData.activeCategoryView) {
         case 'construction':
