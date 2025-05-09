@@ -2,19 +2,38 @@
 
 // Defines all building types (Harvesters and Converters) in the game.
 const buildingTypes = {
-    // ENERGY HARVESTERS
-    'basicEnergySiphon': {
-        id: 'basicEnergySiphon',
-        name: 'Basic Energy Siphon',
-        description: 'A fundamental Energy harvester. Passively siphons ambient universal energy, providing a steady initial Energy income.',
-        cost: { material: 0, credits: 0, energy: 25 },
-        production: { energy: 0.1 },
+    // INITIAL ENERGY HARVESTER (Still part of Construction & Automation)
+    'microSiphonRelay': { // Renamed for clarity from a generic "siphon"
+        id: 'microSiphonRelay',
+        name: 'Micro-Siphon Relay',
+        description: 'A small, automated relay that passively draws and stabilizes trace amounts of ambient Energy.',
+        cost: { material: 5, credits: 0, energy: 30 }, // Requires a tiny bit of manually made material
+        production: { energy: 0.15 }, // Produces Energy
         upkeep: { energy: 0.01 },
-        unlockedByScience: null,
+        unlockedByScience: 'sci_unlock_converters', // Unlocked early
         type: 'harvester',
-        category: 'construction',
+        category: 'construction', // Foundational construction
         maxOwned: 5,
     },
+
+    // INITIAL MATERIAL CONVERTER (Primary focus for Construction & Automation Material output)
+    'basicMatterAssembler': { // Replaces/Re-purposes the old "Basic Energy Siphon"
+        id: 'basicMatterAssembler',
+        name: 'Basic Matter Assembler',
+        description: 'A rudimentary converter that coalesces raw Energy into basic structural Material. Key for initial expansion.',
+        cost: { material: 0, credits: 0, energy: 40 }, // Costs only Energy to get the first one
+        consumes: { energy: 0.25 },      // Energy consumed per second
+        produces: { material: 0.1 },    // <<<< PRODUCES 0.1 MATERIAL/SEC
+        upkeep: {},
+        unlockedByScience: null,        // AVAILABLE BY DEFAULT to kickstart material
+        type: 'converter',
+        outputResource: 'material',
+        inputResource: 'energy',
+        category: 'construction',
+        maxOwned: 10, // Allow a few of these basic ones
+    },
+
+    // TIER 1 ADVANCED ENERGY HARVESTER
     'stellarCollector': {
         id: 'stellarCollector',
         name: 'Stellar Radiation Collector',
@@ -27,28 +46,14 @@ const buildingTypes = {
         category: 'construction',
     },
 
-    // TIER 1 CONVERTERS
-    'matterCoalescerMk1': {
-        id: 'matterCoalescerMk1',
-        name: 'Matter Coalescer Mk1',
-        description: 'A Tier 1 Material converter. Transmutes raw Energy into basic Material, essential for construction and expansion.',
-        cost: { material: 5, energy: 75 },
-        consumes: { energy: 0.5 },
-        produces: { material: 0.2 }, // Produces 0.2 Material/sec
-        upkeep: {},
-        unlockedByScience: 'sci_unlock_converters',
-        type: 'converter',
-        outputResource: 'material',
-        inputResource: 'energy',
-        category: 'construction',
-    },
-    'dataStreamEmulator': {
+    // TIER 1 CONVERTERS (Unlocked by 'sci_unlock_converters' or specific research)
+    'dataStreamEmulator': { // For Research Data
         id: 'dataStreamEmulator',
         name: 'Data Stream Emulator',
-        description: 'A Tier 1 Research converter. Channels Energy to emulate universal principles, generating vital Research Data for technological advancement.',
-        cost: { material: 10, energy: 100 },
+        description: 'A Tier 1 Research converter. Channels Energy to emulate universal principles, generating vital Research Data.',
+        cost: { material: 10, energy: 100 }, // Requires Material
         consumes: { energy: 0.8 },
-        produces: { researchData: 0.3 }, // Produces 0.3 Research Data/sec
+        produces: { researchData: 0.3 },
         upkeep: {},
         unlockedByScience: 'sci_unlock_converters',
         type: 'converter',
@@ -56,13 +61,13 @@ const buildingTypes = {
         inputResource: 'energy',
         category: 'research',
     },
-    'valueRefinery': {
+    'valueRefinery': { // For Credits
         id: 'valueRefinery',
         name: 'Value Refinery',
-        description: 'A Tier 1 Credit synthesizer. Refines Energy into stable Credit units, enabling advanced economic operations and projects.',
-        cost: { material: 15, energy: 125 },
+        description: 'A Tier 1 Credit synthesizer. Refines Energy into stable Credit units for economic operations.',
+        cost: { material: 15, energy: 125 }, // Requires Material
         consumes: { energy: 1.0 },
-        produces: { credits: 0.5 }, // Produces 0.5 Credits/sec
+        produces: { credits: 0.5 },
         upkeep: {},
         unlockedByScience: 'sci_unlock_converters',
         type: 'converter',
@@ -71,14 +76,14 @@ const buildingTypes = {
         category: 'banking',
     },
 
-    // TIER 2+
+    // TIER 2+ MATERIAL CONVERTER
     'industrialFabricator': {
         id: 'industrialFabricator',
         name: 'Industrial Fabricator',
-        description: 'An advanced Material converter. Offers superior efficiency in transmuting Energy into complex Materials for large-scale projects.',
+        description: 'An advanced Material converter. Offers superior efficiency in transmuting Energy into complex Materials.',
         cost: { material: 200, energy: 0, credits: 50 },
         consumes: { energy: 2.5 },
-        produces: { material: 1.5 },
+        produces: { material: 1.5 }, // Produces more Material
         upkeep: { credits: 0.2 },
         unlockedByScience: 'sci_advanced_material_conversion',
         type: 'converter',
@@ -88,11 +93,7 @@ const buildingTypes = {
     },
 };
 
-/**
- * Checks if the player can afford a given building.
- * @param {string} buildingId - The ID of the building to check.
- * @returns {boolean} True if affordable, false otherwise.
- */
+// --- canAffordBuilding function ---
 function canAffordBuilding(buildingId) {
     const building = buildingTypes[buildingId];
     if (!building) {
@@ -112,12 +113,7 @@ function canAffordBuilding(buildingId) {
     return true;
 }
 
-/**
- * Handles the purchase of a building.
- * Deducts costs, adds the building to owned list, recalculates rates, and updates UI.
- * @param {string} buildingId - The ID of the building to buy.
- * @returns {boolean} True if purchase was successful, false otherwise.
- */
+// --- buyBuilding function ---
 function buyBuilding(buildingId) {
     const building = buildingTypes[buildingId];
     if (!building) {
@@ -151,42 +147,32 @@ function buyBuilding(buildingId) {
     gameData.ownedBuildings[buildingId] = currentOwned + 1;
     console.log(`Constructed ${building.name}. Total owned: ${gameData.ownedBuildings[buildingId]}`);
     
-    // **CRITICAL CHANGE HERE:**
-    // Recalculate all production and upkeep rates immediately after purchase.
     if (typeof calculateTotalProductionAndUpkeep === 'function') {
-        calculateTotalProductionAndUpkeep();
+        calculateTotalProductionAndUpkeep(); // Recalculate rates
     } else {
-        console.error("calculateTotalProductionAndUpkeep function not found! Rates will not update immediately.");
+        console.error("calculateTotalProductionAndUpkeep function not found!");
     }
 
-    // Now update the UI, which will use the freshly recalculated rates.
     if (typeof updateAllUIDisplays === 'function') {
-        updateAllUIDisplays();
+        updateAllUIDisplays(); // Then update UI with new rates
     } else {
         console.warn("updateAllUIDisplays function not found after buying building.");
     }
     return true;
 }
 
-/**
- * Calculates total production and upkeep rates from all owned buildings.
- * Updates gameData.productionRates, gameData.upkeepRates, and gameData.consumptionRates.
- */
+// --- calculateTotalProductionAndUpkeep function ---
 function calculateTotalProductionAndUpkeep() {
-    // Reset all relevant rates to zero before recalculating
     gameData.productionRates.energyFromHarvesters = 0;
     gameData.productionRates.material = 0;
     gameData.productionRates.researchData = 0;
     gameData.productionRates.credits = 0;
-
     gameData.upkeepRates.energyForConverters = 0;
     gameData.upkeepRates.energyForOtherSystems = 0;
     gameData.upkeepRates.creditsForMaintenance = 0;
-
     gameData.consumptionRates.energyByMaterialConverters = 0;
     gameData.consumptionRates.energyByResearchEmulators = 0;
     gameData.consumptionRates.energyByCreditSynthesizers = 0;
-
     let totalPotentialEnergyDemandFromConverters = 0;
 
     for (const buildingId in gameData.ownedBuildings) {
@@ -198,7 +184,7 @@ function calculateTotalProductionAndUpkeep() {
                 continue;
             }
             if (building.type === 'harvester') {
-                if (building.production && building.production.energy) {
+                if (building.production && building.production.energy !== undefined) { // Check property exists
                     gameData.productionRates.energyFromHarvesters += building.production.energy * count;
                 }
                 if (building.upkeep) {
@@ -209,13 +195,13 @@ function calculateTotalProductionAndUpkeep() {
                 const energyNeededForThisType = (building.consumes && building.consumes.energy || 0) * count;
                 totalPotentialEnergyDemandFromConverters += energyNeededForThisType;
                 if (building.produces) {
-                    if (building.outputResource === 'material' && building.produces.material) {
+                    if (building.outputResource === 'material' && building.produces.material !== undefined) {
                         gameData.productionRates.material += building.produces.material * count;
                         gameData.consumptionRates.energyByMaterialConverters += energyNeededForThisType;
-                    } else if (building.outputResource === 'researchData' && building.produces.researchData) {
+                    } else if (building.outputResource === 'researchData' && building.produces.researchData !== undefined) {
                         gameData.productionRates.researchData += building.produces.researchData * count;
                         gameData.consumptionRates.energyByResearchEmulators += energyNeededForThisType;
-                    } else if (building.outputResource === 'credits' && building.produces.credits) {
+                    } else if (building.outputResource === 'credits' && building.produces.credits !== undefined) {
                         gameData.productionRates.credits += building.produces.credits * count;
                         gameData.consumptionRates.energyByCreditSynthesizers += energyNeededForThisType;
                     }
