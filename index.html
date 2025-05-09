@@ -21,9 +21,9 @@
                     <span class="net-change" id="energyNetChange">0.00</span><span class="unit-label">e/sec</span>
                     <span class="separator">|</span>
                     <span class="details-group">
-                        (<span id="energyProductionRate">0.00</span>
+                        (<span class="rate-value" id="energyProductionRate">0.00</span>
                         <span class="separator-dash">-</span>
-                        <span id="energyUpkeepRate">0.00</span>)<span class="unit-label">e/sec</span>
+                        <span class="rate-value" id="energyUpkeepRate">0.00</span>)<span class="unit-label">e/sec</span>
                     </span>
                 </div>
                 <div class="resource">
@@ -33,9 +33,9 @@
                     <span class="net-change" id="materialNetChange">0.00</span><span class="unit-label">m/sec</span>
                     <span class="separator">|</span>
                     <span class="details-group">
-                        (<span id="materialProductionRate">0.00</span>
+                        (<span class="rate-value" id="materialProductionRate">0.00</span>
                         <span class="separator-dash">-</span>
-                        <span id="materialUpkeepRate">0.00</span>)<span class="unit-label">m/sec</span>
+                        <span class="rate-value" id="materialUpkeepRate">0.00</span>)<span class="unit-label">m/sec</span>
                     </span>
                 </div>
                 <div class="resource">
@@ -45,9 +45,9 @@
                     <span class="net-change" id="researchNetChange">0.00</span><span class="unit-label">r.data/sec</span>
                     <span class="separator">|</span>
                     <span class="details-group">
-                        (<span id="researchProductionRate">0.00</span>
+                        (<span class="rate-value" id="researchProductionRate">0.00</span>
                         <span class="separator-dash">-</span>
-                        <span id="researchUpkeepRate">0.00</span>)<span class="unit-label">r.data/sec</span>
+                        <span class="rate-value" id="researchUpkeepRate">0.00</span>)<span class="unit-label">r.data/sec</span>
                     </span>
                 </div>
                 <div class="resource">
@@ -57,9 +57,9 @@
                     <span class="net-change" id="creditsNetChange">0.00</span><span class="unit-label">c/sec</span>
                     <span class="separator">|</span>
                     <span class="details-group">
-                        (<span id="creditsProductionRate">0.00</span>
+                        (<span class="rate-value" id="creditsProductionRate">0.00</span>
                         <span class="separator-dash">-</span>
-                        <span id="creditsUpkeepRate">0.00</span>)<span class="unit-label">c/sec</span>
+                        <span class="rate-value" id="creditsUpkeepRate">0.00</span>)<span class="unit-label">c/sec</span>
                     </span>
                 </div>
             </section>
@@ -67,12 +67,17 @@
             <section id="interaction-area">
                 <h2>Core Operations</h2>
                 <button id="mineEnergyButton">Siphon Energy (Power: <span id="clickPowerDisplay">1</span>)</button>
-                <p>Total Siphons: <span id="totalClicksDisplay">0</span> | Attunement: <span id="promotionLevelDisplay">0</span> (+<span id="promotionBonusDisplay">0</span> E/Siphon)</p>
+                <div class="interaction-details">
+                    <p>Total Siphons: <span id="totalClicksDisplay">0</span></p>
+                    <p>Attunement: <span id="promotionLevelDisplay">0</span> (<span id="promotionBonusDisplay">+0</span> E/Siphon)</p>
+                </div>
                 
                 <hr class="operations-divider">
-                <p><strong>Manual Conversion Matrix:</strong></p>
-                <button id="manualConvertMaterialButton" class="manual-action-button">Coalesce Material (10E → 1M)</button>
-                <button id="manualConvertResearchButton" class="manual-action-button">Emulate Data (15E → 1RData)</button>
+                <p class="manual-conversion-title"><strong>Manual Conversion Matrix:</strong></p>
+                <div class="manual-conversion-buttons">
+                    <button id="manualConvertMaterialButton" class="manual-action-button">Coalesce Material (10E → 1M)</button>
+                    <button id="manualConvertResearchButton" class="manual-action-button">Emulate Data (15E → 1RData)</button>
+                </div>
             </section>
         </div> <nav class="category-navigation">
             <button id="navButtonConstruction" class="category-nav-button" data-category="construction">Construction & Automation</button>
@@ -88,12 +93,14 @@
         </section>
 
         <footer>
-            <p>Aethel Interface v0.4 | System View Active</p>
+            <p>Aethel Interface v0.4.1 | System View Active</p>
         </footer>
     </div>
 
     <script src="js/gameData.js"></script>
-    <script src="js/buildings.js"></script> <script src="js/science.js"></script>   <script src="js/uiUpdates.js"></script>
+    <script src="js/buildings.js"></script> 
+    <script src="js/science.js"></script>
+    <script src="js/uiUpdates.js"></script>
     <script src="js/eventHandlers.js"></script>
     <script src="js/main.js"></script>
 </body>
