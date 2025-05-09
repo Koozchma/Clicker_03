@@ -9,52 +9,81 @@
 <body>
     <div class="container">
         <header>
-            <h1>Energy Nexus</h1> </header>
+            <h1>Energy Nexus</h1>
+        </header>
 
-        <section id="resource-display">
-            <h2>System Resources</h2>
-            <div class="resource">
-                <span>Energy:</span>
-                <span id="currentEnergy">0</span>
-                | <span id="energyNetChange">0.00</span> e/sec
-                | (<span id="energyProductionRate">0.00</span> - <span id="energyUpkeepRate">0.00</span>) e/sec
-            </div>
-            <div class="resource">
-                <span>Credits:</span>
-                <span id="currentCredits">0</span>
-                | <span id="creditsNetChange">0.00</span> c/sec
-                | (<span id="creditsProductionRate">0.00</span> - <span id="creditsUpkeepRate">0.00</span>) c/sec
-            </div>
-            <div class="resource">
-                <span>Material:</span>
-                <span id="currentMaterial">0</span>
-                | <span id="materialNetChange">0.00</span> m/sec
-                | (<span id="materialProductionRate">0.00</span> - <span id="materialUpkeepRate">0.00</span>) m/sec
-            </div>
-            <div class="resource">
-                <span>Research:</span>
-                <span id="currentResearch">0</span>
-                | <span id="researchNetChange">0.00</span> r/sec
-                | (<span id="researchProductionRate">0.00</span> - <span id="researchUpkeepRate">0.00</span>) r/sec
-            </div>
-        </section>
+        <div class="top-row-layout">
+            <section id="resource-display">
+                <h2>System Resources</h2>
+                <div class="resource">
+                    <span class="label">Energy:</span>
+                    <span class="current-value" id="currentEnergy">0</span>
+                    <span class="separator">|</span>
+                    <span class="net-change" id="energyNetChange">0.00</span><span class="unit-label">e/sec</span>
+                    <span class="separator">|</span>
+                    <span class="details-group">
+                        (<span id="energyProductionRate">0.00</span>
+                        <span class="separator-dash">-</span>
+                        <span id="energyUpkeepRate">0.00</span>)<span class="unit-label">e/sec</span>
+                    </span>
+                </div>
+                <div class="resource">
+                    <span class="label">Credits:</span>
+                    <span class="current-value" id="currentCredits">0</span>
+                    <span class="separator">|</span>
+                    <span class="net-change" id="creditsNetChange">0.00</span><span class="unit-label">c/sec</span>
+                    <span class="separator">|</span>
+                    <span class="details-group">
+                        (<span id="creditsProductionRate">0.00</span>
+                        <span class="separator-dash">-</span>
+                        <span id="creditsUpkeepRate">0.00</span>)<span class="unit-label">c/sec</span>
+                    </span>
+                </div>
+                <div class="resource">
+                    <span class="label">Material:</span>
+                    <span class="current-value" id="currentMaterial">0</span>
+                    <span class="separator">|</span>
+                    <span class="net-change" id="materialNetChange">0.00</span><span class="unit-label">m/sec</span>
+                    <span class="separator">|</span>
+                    <span class="details-group">
+                        (<span id="materialProductionRate">0.00</span>
+                        <span class="separator-dash">-</span>
+                        <span id="materialUpkeepRate">0.00</span>)<span class="unit-label">m/sec</span>
+                    </span>
+                </div>
+                <div class="resource">
+                    <span class="label">Research:</span>
+                    <span class="current-value" id="currentResearch">0</span>
+                    <span class="separator">|</span>
+                    <span class="net-change" id="researchNetChange">0.00</span><span class="unit-label">r/sec</span>
+                    <span class="separator">|</span>
+                    <span class="details-group">
+                        (<span id="researchProductionRate">0.00</span>
+                        <span class="separator-dash">-</span>
+                        <span id="researchUpkeepRate">0.00</span>)<span class="unit-label">r/sec</span>
+                    </span>
+                </div>
+            </section>
 
-        <section id="interaction-area">
-            <h2>Core Operations</h2>
-            <button id="mineEnergyButton">Mine Energy (Click Power: <span id="clickPowerDisplay">1</span>)</button>
-            <p>Total Clicks: <span id="totalClicksDisplay">0</span></p>
-            <p>Promotion Level: <span id="promotionLevelDisplay">0</span> (+<span id="promotionBonusDisplay">0</span> Energy/Click)</p>
-        </section>
-
-        <div class="game-sections-wrapper">
+            <section id="interaction-area">
+                <h2>Core Operations</h2>
+                <button id="mineEnergyButton">Mine Energy (Click Power: <span id="clickPowerDisplay">1</span>)</button>
+                <p>Total Clicks: <span id="totalClicksDisplay">0</span></p>
+                <p>Promotion Level: <span id="promotionLevelDisplay">0</span> (+<span id="promotionBonusDisplay">0</span> Energy/Click)</p>
+            </section>
+        </div> <div class="game-sections-wrapper">
             <section id="buildings-automation-display">
-                <h2>Construction & Automation</h2> <div id="building-list">
-                    <p>No facilities online.</p> </div>
+                <h2>Construction & Automation</h2>
+                <div id="building-list">
+                    <p>No facilities online.</p>
+                </div>
             </section>
 
             <section id="science-tree-display">
-                <h2>Research & Development</h2> <div id="science-list">
-                    <p>No research projects available.</p> </div>
+                <h2>Research & Development</h2>
+                <div id="science-list">
+                    <p>No research projects available.</p>
+                </div>
             </section>
         </div>
 
