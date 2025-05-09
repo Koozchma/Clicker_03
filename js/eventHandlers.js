@@ -1,7 +1,15 @@
 // js/eventHandlers.js
 
 document.getElementById('mineEnergyButton').addEventListener('click', function() {
-    gameData.currentEnergy += gameData.clickPower;
+    // Ensure gameData.clickPower is a number
+    const clickPower = Number(gameData.clickPower) || 1; // Default to 1 if NaN or undefined
+
+    // Ensure gameData.currentEnergy starts as a number or is reset if it became NaN
+    if (isNaN(gameData.currentEnergy)) {
+        // console.warn("currentEnergy was NaN before click, resetting to 0");
+        gameData.currentEnergy = 0;
+    }
+    gameData.currentEnergy += clickPower;
     gameData.totalClicks++;
 
     // Promotion Check
