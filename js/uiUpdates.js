@@ -99,7 +99,7 @@ function canAffordBuildingWithAdjustedCost(buildingId) {
     const building = buildingTypes[buildingId];
     if (!building) return false;
     const costToConsider = (typeof getAdjustedBuildingCost === 'function') ? getAdjustedBuildingCost(buildingId) : building.cost;
-    if (!costToConsider) return false;
+    if (!costToConsider) return false; 
     return gameData.currentEnergy >= (costToConsider.energy || 0) &&
            gameData.material >= (costToConsider.material || 0) &&
            gameData.credits >= (costToConsider.credits || 0);
@@ -113,19 +113,23 @@ function canAffordBuildingWithAdjustedCost(buildingId) {
 function getBuildingOutputString(building) {
     let outputParts = [];
     if (building.produces) {
-        if (building.produces.energy !== undefined) outputParts.push(`${formatNumber(building.produces.energy, 2)} Energy/sec`);
-        if (building.produces.material !== undefined) outputParts.push(`${formatNumber(building.produces.material, 2)} Material/sec`);
-        if (building.produces.credits !== undefined) outputParts.push(`${formatNumber(building.produces.credits, 2)} Credits/sec`);
-        if (building.produces.researchData !== undefined) outputParts.push(`${formatNumber(building.produces.researchData, 2)} RData/sec`);
+        // CORRECTED CHECK: Ensure property exists and is not just implicitly 0.
+        if (building.produces.energy !== undefined && building.produces.energy !== 0) outputParts.push(`${formatNumber(building.produces.energy, 2)} Energy/sec`);
+        if (building.produces.material !== undefined && building.produces.material !== 0) outputParts.push(`${formatNumber(building.produces.material, 2)} Material/sec`);
+        if (building.produces.credits !== undefined && building.produces.credits !== 0) outputParts.push(`${formatNumber(building.produces.credits, 2)} Credits/sec`);
+        if (building.produces.researchData !== undefined && building.produces.researchData !== 0) outputParts.push(`${formatNumber(building.produces.researchData, 2)} RData/sec`);
     }
+    
+    // If it's a harvester and its primary production is energy (even if other 'produces' are zero or undefined)
+    if (building.type === 'harvester' && building.production && building.production.energy !== undefined && building.production.energy !== 0 && outputParts.length === 0) {
+        outputParts.push(`${formatNumber(building.production.energy, 2)} Energy/sec`);
+    }
+
+
     if (outputParts.length > 0) {
         return `Capacity: ${outputParts.join(', ')} (Production)`;
     }
-    // If no 'produces' object or it's empty, it's not primarily a production building for these resources.
-    // Could be a harvester with only 'production.energy' or a special building.
-    // If it's a harvester and only produces energy, it's already handled above.
-    // For other non-producing buildings, or if 'produces' is truly empty:
-    return 'Output: Special or None';
+    return 'Output: None or Passive Effect'; // More accurate fallback
 }
 
 
@@ -142,7 +146,6 @@ function updateBuildingList(container) {
     let hasVisibleBuildings = false;
     for (const id in buildingTypes) {
         const building = buildingTypes[id];
-        // Filter for the 'construction' category (includes harvesters and material converters)
         if (building.category !== 'construction') continue;
 
         const isUnlocked = !building.unlockedByScience || gameData.unlockedScience[building.unlockedByScience];
@@ -161,7 +164,7 @@ function updateBuildingList(container) {
             if (costString === `Cost: ` && (adjustedCost.energy === 0 || adjustedCost.material === 0 || adjustedCost.credits === 0)) costString = 'Cost: Free';
         } else { costString = 'Cost: N/A'; }
 
-        const outputString = getBuildingOutputString(building); // Use helper function
+        const outputString = getBuildingOutputString(building); 
 
         let upkeepString = 'Requires: ';
         if(building.consumes && building.consumes.energy > 0) {
@@ -303,7 +306,7 @@ function updateBankingList(container) {
             if (costString === `Cost: ` && (adjustedCost.energy === 0 || adjustedCost.material === 0 || adjustedCost.credits === 0)) costString = 'Cost: Free';
         } else { costString = 'Cost: N/A'; }
 
-        const outputString = getBuildingOutputString(building); // Use helper function
+        const outputString = getBuildingOutputString(building); 
 
         let upkeepString = 'Requires: ';
         if(building.consumes && building.consumes.energy > 0) {
@@ -362,7 +365,7 @@ function updateCategoryDisplay() {
         }
     }
     
-    categoryListContainer.innerHTML = ''; // Clear previous content before rendering new list
+    categoryListContainer.innerHTML = ''; 
 
     switch (gameData.activeCategoryView) {
         case 'construction':
