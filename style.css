@@ -1,161 +1,246 @@
+/* style.css */
+:root {
+    --color-bg-deep-blue: #1a2238; /* Example deep blue */
+    --color-bg-charcoal: #23272a;   /* Example charcoal gray */
+    --color-bg-black: #0d0d0d;     /* True black */
+    --color-text-light: #e0e0e0;
+    --color-text-secondary: #9da5b3; /* Softer text for less emphasis */
+
+    --color-accent-cyan: #00ffff;       /* Electric cyan */
+    --color-accent-green: #66ff99;      /* Soft glowing green */
+    --color-accent-purple: #9370db;     /* Subtle deep purple */
+    --color-accent-orange-glow: #ff8c00; /* Sharp orange */
+    --color-accent-red-glow: #ff4d4d;   /* Sharp red */
+
+    --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Keep for now, can be changed */
+    --card-bg: rgba(35, 39, 42, 0.7); /* Slightly transparent charcoal for "floating card" effect */
+    --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --border-radius-main: 8px;
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #1a1a1a;
-    color: #e0e0e0;
+    font-family: var(--font-primary);
+    background-color: var(--color-bg-deep-blue); /* Using deep blue as primary background */
+    color: var(--color-text-light);
     margin: 0;
     padding: 20px;
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    flex-direction: column; /* Allow header and main content to stack */
+    align-items: center;
     min-height: 100vh;
+    font-size: 16px;
+    line-height: 1.6;
 }
 
 .container {
-    width: 90%;
-    max-width: 1200px;
-    background-color: #2c2c2c;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    width: 95%;
+    max-width: 1400px; /* Allow wider layout for more space */
+    /* background-color: var(--color-bg-charcoal); /* Container might be less distinct or just a layout guide */
+    padding: 0; /* Padding will be on sections/cards */
+    border-radius: 0; /* No border for main container if sections are cards */
+    box-shadow: none;
+}
+
+header {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    margin-bottom: 30px;
 }
 
 header h1 {
-    text-align: center;
-    color: #4CAF50;
-    margin-bottom: 20px;
+    color: var(--color-accent-cyan); /* Main title with cyan */
+    font-size: 2.5em;
+    margin: 0;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.3); /* Subtle glow */
 }
 
+/* Modular sections as "cards" */
 section {
-    background-color: #383838;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    border: 1px solid #4a4a4a;
+    background-color: var(--card-bg);
+    padding: 25px 30px; /* More padding inside cards */
+    margin-bottom: 30px; /* More space between cards */
+    border-radius: var(--border-radius-main);
+    box-shadow: var(--card-shadow);
+    /* border: 1px solid rgba(0, 255, 255, 0.1); /* Optional subtle border */
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
 }
+
+/* section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+} */
 
 h2 {
-    color: #4CAF50;
-    border-bottom: 1px solid #4CAF50;
-    padding-bottom: 5px;
+    color: var(--color-accent-green); /* Section titles with green */
+    border-bottom: 1px solid var(--color-accent-green);
+    padding-bottom: 10px;
     margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    text-shadow: 0 0 5px rgba(102, 255, 153, 0.2);
 }
 
 .resource {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     font-size: 1.1em;
+    display: flex; /* For better alignment if needed */
+    flex-wrap: wrap;
+    align-items: center;
 }
 
-.resource span:first-child {
+.resource span:first-child { /* Resource name, e.g., "Energy:" */
     font-weight: bold;
-    color: #87CEEB; /* Light blue for resource names */
+    color: var(--color-accent-cyan); /* Cyan for resource names */
+    margin-right: 8px;
 }
+.resource span[id^="current"] { /* The current amount, e.g., currentEnergy */
+    font-weight: bold;
+    color: var(--color-text-light); /* Bright white for the amount */
+    margin-right: 10px;
+}
+.resource span[id$="NetChange"] {
+    color: var(--color-accent-green); /* Green for positive net change, can be dynamic later */
+    font-weight: bold;
+    margin-right: 5px;
+}
+.resource span { /* Other spans in the resource line */
+    color: var(--color-text-secondary);
+    margin-right: 5px;
+}
+
 
 #interaction-area button {
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--color-accent-cyan);
+    color: var(--color-bg-black); /* Dark text on bright button */
     border: none;
-    padding: 10px 20px;
+    padding: 12px 25px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
+    font-size: 1.1em;
+    font-weight: bold;
     margin: 10px 0;
     cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+    border-radius: var(--border-radius-main);
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 255, 255, 0.2);
 }
 
 #interaction-area button:hover {
-    background-color: #45a049;
+    background-color: lighten(var(--color-accent-cyan), 10%); /* Needs SASS or JS for lighten, use a fixed lighter cyan for now */
+    background-color: #33ffff; /* Lighter cyan */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 255, 255, 0.3);
 }
 
 #interaction-area button:disabled {
     background-color: #555;
+    color: #888;
     cursor: not-allowed;
+    box-shadow: none;
+    transform: translateY(0);
 }
 
+#interaction-area p {
+    color: var(--color-text-secondary);
+}
+
+
 .game-sections-wrapper {
-    display: flex;
-    gap: 20px; /* Space between buildings and science tree */
+    display: grid; /* Using grid for more complex layouts */
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Responsive columns */
+    gap: 30px; /* Space between buildings and science tree cards */
+    width: 100%;
 }
 
 #buildings-automation-display,
 #science-tree-display {
-    flex: 1; /* Each takes up half the space */
-    min-width: 300px; /* Minimum width before wrapping */
+    /* min-width handled by grid's minmax */
+    /* flex: 1; remove if using grid */
 }
 
 .building-item, .science-item {
-    background-color: #444;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    border-left: 3px solid #87CEEB;
+    background-color: rgba(44, 50, 60, 0.8); /* Darker, slightly more transparent cards within sections */
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border-radius: calc(var(--border-radius-main) - 2px); /* Slightly smaller radius */
+    border-left: 4px solid var(--color-accent-purple); /* Purple accent for these items */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: border-left-color 0.3s ease;
 }
+.science-item.unlocked-true { /* Example: class added by JS when tech is unlocked */
+    border-left-color: var(--color-accent-green) !important;
+}
+
 
 .building-item h3, .science-item h3 {
     margin-top: 0;
-    margin-bottom: 5px;
-    color: #e0e0e0;
+    margin-bottom: 8px;
+    color: var(--color-text-light);
+    font-size: 1.2em;
 }
 
 .building-item p, .science-item p {
-    margin: 3px 0;
-    font-size: 0.9em;
+    margin: 5px 0;
+    font-size: 0.95em;
+    color: var(--color-text-secondary);
+}
+.science-item p:nth-of-type(2) { /* Cost line */
+    color: var(--color-accent-cyan); /* Make costs cyan */
 }
 
+
 .building-item button, .science-item button {
-    background-color: #007bff;
-    color: white;
+    background-color: var(--color-accent-purple);
+    color: var(--color-text-light);
     border: none;
-    padding: 8px 12px;
+    padding: 8px 15px;
     font-size: 0.9em;
-    border-radius: 3px;
+    font-weight: bold;
+    border-radius: calc(var(--border-radius-main) - 4px);
     cursor: pointer;
-    margin-top: 5px;
-    transition: background-color 0.2s ease;
+    margin-top: 10px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .building-item button:hover, .science-item button:hover {
-    background-color: #0056b3;
+    background-color: lighten(var(--color-accent-purple), 10%); /* Or a fixed lighter purple */
+    background-color: #ab82ff; /* Lighter purple */
+    transform: translateY(-1px);
 }
 
 .building-item button:disabled, .science-item button:disabled {
-    background-color: #6c757d;
+    background-color: #4a4a52;
+    color: #787887;
     cursor: not-allowed;
+    transform: translateY(0);
 }
 
-.tooltip {
-    position: relative;
-    display: inline-block;
-}
-
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 200px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%; /* Position the tooltip above the text */
-    left: 50%;
-    margin-left: -100px; /* Use half of the width to center the tooltip */
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-}
-
+/* Tooltip can be styled similarly if used */
 
 footer {
+    width: 100%;
     text-align: center;
-    margin-top: 30px;
+    margin-top: 40px;
+    padding: 20px 0;
     font-size: 0.9em;
-    color: #aaa;
+    color: var(--color-text-secondary);
+    border-top: 1px solid rgba(157, 165, 179, 0.2); /* Subtle top border for footer */
+}
+
+/* Subtle motion for future elements */
+.slide-in {
+    animation: slideInFromBottom 0.5s ease-out forwards;
+}
+
+@keyframes slideInFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
