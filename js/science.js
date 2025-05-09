@@ -1,42 +1,39 @@
 // js/science.js
 
-// Defines all researchable technologies in the game.
 const scienceTree = {
     // TIER 0 - Initial Unlocks
     'sci_unlock_converters': {
         id: 'sci_unlock_converters',
         name: 'Basic Conversion Schematics',
-        description: 'Decipher fundamental blueprints to construct Tier 1 Energy Converters for Material, Research Data, and Credits. This is the first step towards automation.',
-        cost: { researchData: 5, energy: 50, material: 0, credits: 0 }, // Requires manually emulated Research Data
+        description: 'Decipher fundamental blueprints to construct Tier 1 Energy Converters and basic Energy Relays.',
+        cost: { researchData: 3, energy: 50, material: 0, credits: 0 }, // Slightly reduced RData cost
         effects: function() {
-            console.log("Basic Conversion Schematics deciphered. Tier 1 Converters are now constructible if materials are available.");
-            // The actual ability to build is governed by individual building 'unlockedByScience' properties.
+            console.log("Basic Conversion Schematics deciphered. Tier 1 Converters & Relays accessible.");
         },
-        prerequisites: [], // No prerequisites for this foundational tech
+        prerequisites: [],
         tier: 0,
     },
 
-    // TIER 1 - Requires automated resource generation from T1 converters
+    // TIER 1
     'sci_siphon_attunement_1': {
         id: 'sci_siphon_attunement_1',
         name: 'Siphon Attunement I',
         description: 'Refine manual energy siphoning techniques, increasing Energy gained per siphon operation by +1.',
-        cost: { researchData: 10, energy: 100, material: 5 }, // Requires some basic resources
+        cost: { researchData: 10, energy: 100, material: 5 },
         effects: function() {
             gameData.rawEnergyPerClick += 1;
-            // Recalculate clickPower based on the new rawEnergyPerClick and existing promotions
             gameData.clickPower = gameData.rawEnergyPerClick + (gameData.promotionLevel * gameData.promotionBaseBonus);
             console.log("Siphon Attunement I achieved. New base siphon strength: " + gameData.rawEnergyPerClick);
         },
-        prerequisites: ['sci_unlock_converters'], // Requires understanding of basic schematics
-        tier: 1, // Could be considered Tier 0.5 or Tier 1
+        prerequisites: ['sci_unlock_converters'],
+        tier: 1,
     },
     'sci_stellar_harnessing': {
         id: 'sci_stellar_harnessing',
         name: 'Stellar Harnessing Principles',
         description: 'Unlock the technology for Stellar Radiation Collectors, significantly boosting passive Energy generation.',
         cost: { researchData: 25, material: 50, energy: 150 },
-        effects: function() { /* Unlocks 'stellarCollector' building - handled by building definition */ },
+        effects: function() { /* Unlocks 'stellarCollector' building */ },
         prerequisites: ['sci_unlock_converters'],
         tier: 1,
     },
@@ -46,51 +43,31 @@ const scienceTree = {
         description: 'Develop schematics for the Industrial Fabricator, a more efficient Material Converter.',
         cost: { researchData: 40, material: 100, energy: 200 },
         effects: function() { /* Unlocks 'industrialFabricator' building */ },
-        prerequisites: ['sci_unlock_converters'], // Example: Could also depend on a specific material science tech
+        prerequisites: ['sci_unlock_converters'],
         tier: 1,
     },
-    // Add more T1/T2 research for advanced Research Emulators and Credit Synthesizers here,
-    // ensuring they also have 'sci_unlock_converters' as a prerequisite or a subsequent tech.
 };
 
-/**
- * Checks if the player can afford a given science tech.
- * @param {string} scienceId - The ID of the science to check.
- * @returns {boolean} True if affordable, false otherwise.
- */
 function canAffordScience(scienceId) {
     if (typeof scienceTree === 'undefined' || !scienceTree[scienceId]) {
         console.warn(`canAffordScience: Science tech not found for ID: ${scienceId}`);
         return false;
     }
     const tech = scienceTree[scienceId];
-
     if ((tech.cost.researchData || 0) > gameData.researchData) return false;
     if ((tech.cost.energy || 0) > gameData.currentEnergy) return false;
     if ((tech.cost.material || 0) > gameData.material) return false;
     if ((tech.cost.credits || 0) > gameData.credits) return false;
-
     return true;
 }
 
-/**
- * Researches a technology.
- * Deducts costs, marks tech as unlocked, applies effects, and updates UI.
- * @param {string} scienceId - The ID of the science to research.
- * @returns {boolean} True if research was successful, false otherwise.
- */
 function researchTech(scienceId) {
     if (typeof scienceTree === 'undefined' || !scienceTree[scienceId]) {
         console.warn(`researchTech: Science tech not found for ID: ${scienceId}`);
         return false;
     }
     const tech = scienceTree[scienceId];
-
-    if (gameData.unlockedScience[scienceId]) {
-        // console.warn(`Science ${scienceId} is already researched.`); // Can be noisy
-        return false;
-    }
-
+    if (gameData.unlockedScience[scienceId]) return false;
     if (tech.prerequisites && tech.prerequisites.length > 0) {
         for (const prereqId of tech.prerequisites) {
             if (!gameData.unlockedScience[prereqId]) {
@@ -100,52 +77,32 @@ function researchTech(scienceId) {
             }
         }
     }
-
     if (!canAffordScience(scienceId)) {
         alert(`Insufficient resources to initiate research on ${tech.name}.`);
         return false;
     }
-
     gameData.researchData -= (tech.cost.researchData || 0);
     gameData.currentEnergy -= (tech.cost.energy || 0);
     gameData.material -= (tech.cost.material || 0);
     gameData.credits -= (tech.cost.credits || 0);
-
     gameData.unlockedScience[scienceId] = true;
-    if (tech.effects && typeof tech.effects === 'function') {
-        tech.effects();
-    }
-
+    if (tech.effects && typeof tech.effects === 'function') tech.effects();
     console.log(`Research complete: ${tech.name}`);
-    if (typeof updateAllUIDisplays === 'function') {
-        updateAllUIDisplays();
-    }
+    if (typeof updateAllUIDisplays === 'function') updateAllUIDisplays();
     return true;
 }
 
-/**
- * Calculates the adjusted cost of a building, considering research modifiers.
- * @param {string} buildingId - The ID of the building.
- * @returns {object | null} The adjusted cost object, or null if building not found.
- */
 function getAdjustedBuildingCost(buildingId) {
     if (typeof buildingTypes === 'undefined' || !buildingTypes[buildingId]) {
-        // This function is in science.js, but relies on buildingTypes from buildings.js being global
         console.warn(`getAdjustedBuildingCost: Building type not found for ID: ${buildingId}`);
-        return buildingTypes[buildingId] ? buildingTypes[buildingId].cost : null; // Fallback or error
+        return buildingTypes[buildingId] ? buildingTypes[buildingId].cost : null;
     }
     const originalBuilding = buildingTypes[buildingId];
     let costMultiplier = gameData.buildingCostModifier || 1;
-
-    // Example: Add specific science effects that modify costs
-    // if (gameData.unlockedScience['sci_construction_efficiency_1']) { costMultiplier *= 0.9; }
-
     return {
         energy: Math.ceil((originalBuilding.cost.energy || 0) * costMultiplier),
         material: Math.ceil((originalBuilding.cost.material || 0) * costMultiplier),
         credits: Math.ceil((originalBuilding.cost.credits || 0) * costMultiplier),
     };
 }
-
-// Log to confirm script is loaded
 console.log("science.js loaded.");
