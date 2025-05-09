@@ -2,59 +2,58 @@
 
 function gameTick() {
     const now = Date.now();
-    // const delta = (now - gameData.lastTick) / 1000; // Seconds passed since last tick
+    const delta = now - gameData.lastTick;
 
     // --- Passive Energy from Vault ---
-    if (gameData.currentEnergy > 0) {
-        const vaultFactor = getVaultGrowthFactor(); // e.g., 1.001 for 0.1%
+    // Energy vault: always increase by a factor of 1.01 per second (or gameData.vaultMultiplierPercent).
+    // This means currentEnergy * (vaultMultiplierPercent / 100) is ADDED each second.
+    if (gameData.currentEnergy > 0) { // Only generate if there's energy to multiply
+        const vaultFactor = getVaultGrowthFactor(); // e.g., 1.001 if percent is 0.1
         const energyFromVaultThisTick = gameData.currentEnergy * (vaultFactor - 1);
         gameData.currentEnergy += energyFromVaultThisTick;
-        gameData.productionRates.energyFromVault = energyFromVaultThisTick; // Store per-second rate
+        // The 'productionRates.energy' will store this vault generation for display
+        gameData.productionRates.energy = energyFromVaultThisTick; // This is per-second rate
     } else {
-        gameData.productionRates.energyFromVault = 0;
+        gameData.productionRates.energy = 0;
     }
 
+
     // --- Calculate Production & Upkeep from Buildings ---
-    // This function (from buildings.js) updates gameData.productionRates and gameData.upkeepRates
-    calculateTotalProductionAndUpkeep();
+    calculateTotalProductionAndUpkeep(); // This function is in buildings.js
+                                        // It updates gameData.productionRates and gameData.upkeepRates
+                                        // (excluding vault energy which is handled above)
 
     // --- Apply Production (per second) ---
-    gameData.material += gameData.productionRates.material; // Assumes rates are per second
+    // These are already per second, so no delta multiplication needed if tick is 1s
+    gameData.material += gameData.productionRates.material;
     gameData.credits += gameData.productionRates.credits;
     gameData.research += gameData.productionRates.research;
-    gameData.currentEnergy += gameData.productionRates.energyFromBuildings; // Add energy from buildings
 
     // --- Apply Upkeep (per second) ---
     let energyDeficit = false;
-    let newEnergyAfterUpkeep = gameData.currentEnergy - gameData.upkeepRates.energy;
+    let newEnergy = gameData.currentEnergy - gameData.upkeepRates.energy;
 
-    if (newEnergyAfterUpkeep < 0) {
-        // More sophisticated deficit handling could be added here:
-        // - Reduce production efficiency
-        // - Shut down buildings one by one
-        // - For now, allow energy to go slightly negative to indicate a problem, but cap it.
-        gameData.currentEnergy = Math.max(-100, newEnergyAfterUpkeep); // Prevent large negative values
+    if (newEnergy < 0) {
+        // Simple deficit handling: set energy to 0, production might halt or reduce.
+        // For now, just note the deficit and prevent energy from going deeply negative from upkeep.
+        // More complex: shut down buildings, apply penalties.
+        // gameData.currentEnergy = 0; // Option 1: bottom out energy
+        // For now, allow it to go slightly negative to show the problem, but cap it
+        gameData.currentEnergy = Math.max(-100, newEnergy); // Prevent large negative values from upkeep
         energyDeficit = true;
-        // console.warn("Energy deficit! Upkeep may not be fully met.");
-        // If energy is negative, perhaps halt vault production and building production
-        if (gameData.currentEnergy < 0) {
-            gameData.productionRates.energyFromVault = 0; // Stop vault if bankrupt
-            // Optionally stop other productions too
-        }
+        console.warn("Energy deficit! Upkeep exceeds available energy.");
+        // Potentially reduce production rates if in deficit in a more complex system
     } else {
-        gameData.currentEnergy = newEnergyAfterUpkeep;
+        gameData.currentEnergy = newEnergy;
     }
 
-    let newCreditsAfterUpkeep = gameData.credits - gameData.upkeepRates.credits;
-    gameData.credits = Math.max(0, newCreditsAfterUpkeep); // Prevent credits from going below 0
-
-    // (Add similar for material upkeep if implemented)
-    // gameData.material -= gameData.upkeepRates.material;
-    // if (gameData.material < 0) gameData.material = 0;
+    gameData.credits -= gameData.upkeepRates.credits;
+    // Handle negative credits if necessary (e.g., loans, penalties)
+    if (gameData.credits < 0) gameData.credits = 0; // Simplest: don't go below 0
 
 
     // --- Update UI ---
-    // updateAllUIDisplays is in uiUpdates.js
+    // We update UI frequently to ensure buttons (buy/research) are enabled/disabled correctly
     updateAllUIDisplays();
 
     gameData.lastTick = now;
@@ -62,18 +61,16 @@ function gameTick() {
 
 function initializeGame() {
     console.log("Initializing Energy Clicker...");
-    // Future: Load game from localStorage if implemented
-
-    // Ensure all building definitions are available globally if needed by other files early
-    // (Though typically, they are accessed via functions within buildings.js)
+    // Load game from localStorage if implemented
+    // For now, just use default gameData
 
     // Initial UI population
-    updateAllUIDisplays(); // Call this to set initial button states etc.
+    updateAllUIDisplays();
 
     // Start the game loop
     setInterval(gameTick, gameData.gameSettings.tickRate);
-    console.log("Game loop started. Tick rate: " + gameData.gameSettings.tickRate + "ms");
+    console.log("Game loop started.");
 }
 
-// Wait for the DOM to be fully loaded and all scripts parsed before starting the game
+// Wait for the DOM to be fully loaded before starting the game
 document.addEventListener('DOMContentLoaded', initializeGame);
