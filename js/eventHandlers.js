@@ -4,6 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const manualConvertMaterialButton = document.getElementById('manualConvertMaterialButton');
     const manualConvertResearchButton = document.getElementById('manualConvertResearchButton');
 
+    // Category Navigation Buttons
+    const navButtonConstruction = document.getElementById('navButtonConstruction');
+    const navButtonResearch = document.getElementById('navButtonResearch');
+    const navButtonBanking = document.getElementById('navButtonBanking');
+
     if (mineEnergyButton) {
         mineEnergyButton.addEventListener('click', function() {
             if (isNaN(gameData.currentEnergy)) gameData.currentEnergy = 0;
@@ -14,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (gameData.totalClicks > 0 && gameData.totalClicks % gameData.gameSettings.clicksForPromotion === 0) {
                 gameData.promotionLevel++;
-                gameData.clickPower += gameData.promotionBaseBonus; // Direct bonus to clickPower
+                gameData.clickPower += gameData.promotionBaseBonus;
                 console.log(`Cognitive Surge! Attunement Level: ${gameData.promotionLevel}, Siphon Strength: ${gameData.clickPower}`);
             }
             if (typeof updateAllUIDisplays === 'function') updateAllUIDisplays();
@@ -23,7 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error("Siphon Energy Button not found!");
     }
 
-    // Manual Material Conversion
     if (manualConvertMaterialButton) {
         manualConvertMaterialButton.addEventListener('click', function() {
             const cost = gameData.manualConversion.material.energyCost;
@@ -37,11 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert(`Not enough Energy. Requires ${cost} Energy to coalesce Material.`);
             }
         });
-    } else {
-        console.error("Manual Convert Material Button not found!");
     }
 
-    // Manual Research Data Conversion
     if (manualConvertResearchButton) {
         manualConvertResearchButton.addEventListener('click', function() {
             const cost = gameData.manualConversion.research.energyCost;
@@ -55,8 +56,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert(`Not enough Energy. Requires ${cost} Energy to emulate Research Data.`);
             }
         });
-    } else {
-        console.error("Manual Convert Research Button not found!");
+    }
+
+    // Category Navigation Click Handlers
+    function setActiveCategory(category) {
+        gameData.activeCategoryView = category;
+        console.log("Active category set to: " + category);
+        if (typeof updateCategoryDisplay === 'function') { // Check if the specific function exists
+            updateCategoryDisplay();
+        } else if (typeof updateAllUIDisplays === 'function') { // Fallback to full update
+            updateAllUIDisplays();
+        }
+    }
+
+    if (navButtonConstruction) {
+        navButtonConstruction.addEventListener('click', () => setActiveCategory('construction'));
+    }
+    if (navButtonResearch) {
+        navButtonResearch.addEventListener('click', () => setActiveCategory('research'));
+    }
+    if (navButtonBanking) {
+        navButtonBanking.addEventListener('click', () => setActiveCategory('banking'));
     }
 });
 

@@ -1,9 +1,9 @@
 // js/gameData.js
 const gameData = {
     // Core Resources
-    currentEnergy: 25, 
+    currentEnergy: 25,
     rawEnergyPerClick: 1,
-    ambientEnergySiphonRate: 0.01, // CHANGED: Now 1% for ambient siphon
+    ambientEnergySiphonRate: 0.01, // 1% for ambient siphon
 
     material: 0,
     researchData: 0,
@@ -50,12 +50,18 @@ const gameData = {
     ownedBuildings: {},
     unlockedScience: {},
     buildingCostModifier: 1,
+
+    // UI State
+    activeCategoryView: 'construction', // Default view: 'construction', 'research', 'banking'
 };
 
+/**
+ * Calculates the factor by which ambient energy increases current energy.
+ * @returns {number} The growth factor (e.g., 1.01 for 1% growth).
+ */
 function getAmbientSiphonFactor() {
-    // This factor is (1 + rate), so if rate is 0.01, factor is 1.01
-    return 1 + (gameData.ambientEnergySiphonRate); 
+    return 1 + (gameData.ambientEnergySiphonRate);
 }
 
 // Log to confirm script is loaded
-console.log("gameData.js loaded. Ambient Siphon Rate: " + (gameData.ambientEnergySiphonRate * 100) + "%");
+console.log("gameData.js loaded. Active Category: " + gameData.activeCategoryView + ", Ambient Siphon Rate: " + (gameData.ambientEnergySiphonRate * 100) + "%");

@@ -1,239 +1,170 @@
 // js/uiUpdates.js
 
 /**
- * Formats a number into a more readable string, using suffixes for large numbers (k, M, B, etc.)
- * and scientific notation for very small non-zero numbers.
- * Also handles NaN, null, or undefined by returning "0".
+ * Formats a number into a more readable string.
  * @param {number} num - The number to format.
- * @param {number} [decimals=2] - The number of decimal places for scaled numbers.
- * @returns {string} The formatted number string.
+ * @param {number} [decimals=2] - Decimal places.
+ * @returns {string} Formatted number.
  */
 function formatNumber(num, decimals = 2) {
     if (num === undefined || num === null || isNaN(num)) return "0";
     if (num === 0) return "0";
-
     const absNum = Math.abs(num);
     const sign = num < 0 ? "-" : "";
-
-    // Use scientific notation for very small non-zero numbers
     if (absNum < 0.01 && absNum !== 0) return sign + absNum.toExponential(1);
-
-    const suffixes = ["", "k", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"]; // Add more as needed
+    const suffixes = ["", "k", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"];
     let tier = 0;
-
-    // Determine tier only for numbers >= 1000
-    if (absNum >= 1000) {
-        tier = Math.floor(Math.log10(absNum) / 3);
-    }
-
+    if (absNum >= 1000) tier = Math.floor(Math.log10(absNum) / 3);
     if (tier === 0) {
         let fixedNum = absNum.toFixed(decimals);
-        // Remove trailing .00 or .0 for whole numbers or numbers with fewer decimal places than 'decimals'
-        if (decimals > 0 && fixedNum.includes('.')) {
-            fixedNum = fixedNum.replace(/\.?0+$/, "");
-        }
+        if (decimals > 0 && fixedNum.includes('.')) fixedNum = fixedNum.replace(/\.?0+$/, "");
         return sign + fixedNum;
     }
-
-    const suffix = suffixes[tier] || ""; // Fallback if tier is too high
+    const suffix = suffixes[tier] || "";
     const scale = Math.pow(10, tier * 3);
     const scaled = absNum / scale;
-
     let fixedScaledNum = scaled.toFixed(decimals);
-    if (decimals > 0 && fixedScaledNum.includes('.')) {
-        // Remove trailing .00 or .0
-        fixedScaledNum = fixedScaledNum.replace(/\.?0+$/, "");
-    }
+    if (decimals > 0 && fixedScaledNum.includes('.')) fixedScaledNum = fixedScaledNum.replace(/\.?0+$/, "");
     return sign + fixedScaledNum + suffix;
 }
 
 /**
- * Updates all resource displays in the UI (Energy, Credits, Material, Research Data).
- * Follows the format: Current | Net Change/sec | (Total Production/sec - Total Upkeep/sec)
+ * Updates all resource displays in the UI.
  */
 function updateResourceDisplay() {
-    // --- ENERGY ---
-    const currentEnergyVal = Number(gameData.currentEnergy) || 0;
-    document.getElementById('currentEnergy').textContent = formatNumber(currentEnergyVal, 2);
+    const resources = [
+        { name: 'Energy', idPrefix: 'energy', current: gameData.currentEnergy, prodSiphon: gameData.productionRates.energyFromAmbientSiphon, prodBuildings: gameData.productionRates.energyFromHarvesters, upkeepConverters: gameData.upkeepRates.energyForConverters, upkeepSystems: gameData.upkeepRates.energyForOtherSystems, unit: 'e/sec' },
+        { name: 'Material', idPrefix: 'material', current: gameData.material, prodTotal: gameData.productionRates.material, upkeepTotal: 0, unit: 'm/sec' },
+        { name: 'Research Data', idPrefix: 'research', current: gameData.researchData, prodTotal: gameData.productionRates.researchData, upkeepTotal: gameData.upkeepRates.research || 0, unit: 'r.data/sec' },
+        { name: 'Credits', idPrefix: 'credits', current: gameData.credits, prodTotal: gameData.productionRates.credits, upkeepTotal: gameData.upkeepRates.creditsForMaintenance, unit: 'c/sec' }
+    ];
 
-    const energyProdSiphon = Number(gameData.productionRates.energyFromAmbientSiphon) || 0;
-    const energyProdHarvesters = Number(gameData.productionRates.energyFromHarvesters) || 0;
-    const energyUpkeepConverters = Number(gameData.upkeepRates.energyForConverters) || 0; // This is potential DEMAND
-    const energyUpkeepSystems = Number(gameData.upkeepRates.energyForOtherSystems) || 0;
-
-    const totalGrossEnergyProduction = energyProdSiphon + energyProdHarvesters;
-    const totalPotentialEnergyUpkeep = energyUpkeepConverters + energyUpkeepSystems;
-    // Net change reflects potential based on full demand; actual energy change is handled in gameTick
-    const netEnergyChangePerSecond = totalGrossEnergyProduction - totalPotentialEnergyUpkeep;
-
-    const energyNetChangeSpan = document.getElementById('energyNetChange');
-    if (energyNetChangeSpan) {
-        energyNetChangeSpan.textContent = formatNumber(netEnergyChangePerSecond, 2);
-        if (netEnergyChangePerSecond < 0) {
-            energyNetChangeSpan.classList.add('negative-value');
-        } else {
-            energyNetChangeSpan.classList.remove('negative-value');
+    resources.forEach(res => {
+        const currentVal = Number(res.current) || 0;
+        const currentDisplayId = res.idPrefix === 'research' ? 'currentResearch' : `current${res.idPrefix.charAt(0).toUpperCase() + res.idPrefix.slice(1)}`;
+        const currentDisplayElement = document.getElementById(currentDisplayId);
+        if(currentDisplayElement) {
+             currentDisplayElement.textContent = formatNumber(currentVal, 2);
         }
-    }
-    if(document.getElementById('energyProductionRate')) document.getElementById('energyProductionRate').textContent = formatNumber(totalGrossEnergyProduction, 2);
-    if(document.getElementById('energyUpkeepRate')) document.getElementById('energyUpkeepRate').textContent = formatNumber(totalPotentialEnergyUpkeep, 2);
 
-    // --- CREDITS ---
-    const currentCreditsVal = Number(gameData.credits) || 0;
-    document.getElementById('currentCredits').textContent = formatNumber(currentCreditsVal, 2);
-
-    const creditsProdTotal = Number(gameData.productionRates.credits) || 0;
-    const creditsUpkeepTotal = Number(gameData.upkeepRates.creditsForMaintenance) || 0;
-    const netCreditsChangePerSecond = creditsProdTotal - creditsUpkeepTotal;
-
-    const creditsNetChangeSpan = document.getElementById('creditsNetChange');
-    if (creditsNetChangeSpan) {
-        creditsNetChangeSpan.textContent = formatNumber(netCreditsChangePerSecond, 2);
-        if (netCreditsChangePerSecond < 0) {
-            creditsNetChangeSpan.classList.add('negative-value');
+        let totalGrossProduction, totalPotentialUpkeep;
+        if (res.name === 'Energy') {
+            totalGrossProduction = (Number(res.prodSiphon) || 0) + (Number(res.prodBuildings) || 0);
+            totalPotentialUpkeep = (Number(res.upkeepConverters) || 0) + (Number(res.upkeepSystems) || 0);
         } else {
-            creditsNetChangeSpan.classList.remove('negative-value');
+            totalGrossProduction = Number(res.prodTotal) || 0;
+            totalPotentialUpkeep = Number(res.upkeepTotal) || 0;
         }
-    }
-    if(document.getElementById('creditsProductionRate')) document.getElementById('creditsProductionRate').textContent = formatNumber(creditsProdTotal, 2);
-    if(document.getElementById('creditsUpkeepRate')) document.getElementById('creditsUpkeepRate').textContent = formatNumber(creditsUpkeepTotal, 2);
+        const netChangePerSecond = totalGrossProduction - totalPotentialUpkeep;
 
-
-    // --- MATERIAL ---
-    const currentMaterialVal = Number(gameData.material) || 0;
-    document.getElementById('currentMaterial').textContent = formatNumber(currentMaterialVal, 2);
-
-    const materialProdTotal = Number(gameData.productionRates.material) || 0;
-    const materialUpkeepTotal = 0; // Material is consumed by converters, not passive upkeep typically
-    const netMaterialChangePerSecond = materialProdTotal - materialUpkeepTotal;
-
-    const materialNetChangeSpan = document.getElementById('materialNetChange');
-    if(materialNetChangeSpan) {
-        materialNetChangeSpan.textContent = formatNumber(netMaterialChangePerSecond, 2);
-        // Material typically only increases or is consumed for building, so negative class might not apply here in the same way
-        if (netMaterialChangePerSecond < 0) { // Should not happen if upkeep is 0
-             materialNetChangeSpan.classList.add('negative-value');
-        } else {
-             materialNetChangeSpan.classList.remove('negative-value');
+        const netChangeSpan = document.getElementById(`${res.idPrefix}NetChange`);
+        if (netChangeSpan) {
+            netChangeSpan.textContent = formatNumber(netChangePerSecond, 2);
+            netChangeSpan.classList.toggle('negative-value', netChangePerSecond < 0);
         }
-    }
-    if(document.getElementById('materialProductionRate')) document.getElementById('materialProductionRate').textContent = formatNumber(materialProdTotal, 2);
-    if(document.getElementById('materialUpkeepRate')) document.getElementById('materialUpkeepRate').textContent = formatNumber(materialUpkeepTotal, 2);
-
-
-    // --- RESEARCH DATA ---
-    const currentResearchVal = Number(gameData.researchData) || 0; // Using researchData
-    document.getElementById('currentResearch').textContent = formatNumber(currentResearchVal, 2); // HTML ID is 'currentResearch'
-
-    const researchProdTotal = Number(gameData.productionRates.researchData) || 0;
-    const researchUpkeepTotal = Number(gameData.upkeepRates.research) || 0; // Assuming a generic research upkeep if any
-    const netResearchChangePerSecond = researchProdTotal - researchUpkeepTotal;
-
-    const researchNetChangeSpan = document.getElementById('researchNetChange');
-    if (researchNetChangeSpan) {
-        researchNetChangeSpan.textContent = formatNumber(netResearchChangePerSecond, 2);
-        if (netResearchChangePerSecond < 0) {
-            researchNetChangeSpan.classList.add('negative-value');
-        } else {
-            researchNetChangeSpan.classList.remove('negative-value');
-        }
-    }
-    if(document.getElementById('researchProductionRate')) document.getElementById('researchProductionRate').textContent = formatNumber(researchProdTotal, 2);
-    if(document.getElementById('researchUpkeepRate')) document.getElementById('researchUpkeepRate').textContent = formatNumber(researchUpkeepTotal, 2);
+        if(document.getElementById(`${res.idPrefix}ProductionRate`)) document.getElementById(`${res.idPrefix}ProductionRate`).textContent = formatNumber(totalGrossProduction, 2);
+        if(document.getElementById(`${res.idPrefix}UpkeepRate`)) document.getElementById(`${res.idPrefix}UpkeepRate`).textContent = formatNumber(totalPotentialUpkeep, 2);
+    });
 }
 
 /**
- * Updates the display of click power, total clicks, and promotion level.
+ * Updates interaction area elements like click power and manual conversion buttons.
  */
 function updateInteractionArea() {
     if(document.getElementById('clickPowerDisplay')) document.getElementById('clickPowerDisplay').textContent = formatNumber(gameData.clickPower, 0);
     if(document.getElementById('totalClicksDisplay')) document.getElementById('totalClicksDisplay').textContent = formatNumber(gameData.totalClicks, 0);
     if(document.getElementById('promotionLevelDisplay')) document.getElementById('promotionLevelDisplay').textContent = formatNumber(gameData.promotionLevel, 0);
     if(document.getElementById('promotionBonusDisplay')) document.getElementById('promotionBonusDisplay').textContent = formatNumber(gameData.promotionLevel * gameData.promotionBaseBonus, 0);
-    if(document.getElementById('vaultMultiplierDisplay')) document.getElementById('vaultMultiplierDisplay').textContent = gameData.ambientEnergySiphonRate !== undefined ? (gameData.ambientEnergySiphonRate * 100).toFixed(2) : "0.00";
+
+    const manualMaterialButton = document.getElementById('manualConvertMaterialButton');
+    if (manualMaterialButton) {
+        manualMaterialButton.disabled = gameData.currentEnergy < gameData.manualConversion.material.energyCost;
+    }
+    const manualResearchButton = document.getElementById('manualConvertResearchButton');
+    if (manualResearchButton) {
+        manualResearchButton.disabled = gameData.currentEnergy < gameData.manualConversion.research.energyCost;
+    }
 }
 
 /**
- * Helper function to check if a building can be afforded, considering research cost adjustments.
- * Relies on buildingTypes (from buildings.js) and getAdjustedBuildingCost (from science.js).
- * @param {string} buildingId - The ID of the building.
- * @returns {boolean} True if affordable, false otherwise.
+ * Checks if a building can be afforded.
+ * @param {string} buildingId
+ * @returns {boolean}
  */
 function canAffordBuildingWithAdjustedCost(buildingId) {
-    // Ensure buildingTypes is available (should be global from buildings.js)
     if (typeof buildingTypes === 'undefined') {
-        console.error("canAffordBuildingWithAdjustedCost: buildingTypes is not defined.");
+        console.warn("buildingTypes not defined in canAffordBuildingWithAdjustedCost");
         return false;
     }
     const building = buildingTypes[buildingId];
     if (!building) return false;
-
-    // Ensure getAdjustedBuildingCost is available (should be global from science.js)
-    const costToConsider = (typeof getAdjustedBuildingCost === 'function')
-        ? getAdjustedBuildingCost(buildingId)
-        : building.cost;
-
-    if (!costToConsider) return false;
-
+    const costToConsider = (typeof getAdjustedBuildingCost === 'function') ? getAdjustedBuildingCost(buildingId) : building.cost;
+    if (!costToConsider) return false; 
     return gameData.currentEnergy >= (costToConsider.energy || 0) &&
            gameData.material >= (costToConsider.material || 0) &&
            gameData.credits >= (costToConsider.credits || 0);
 }
 
 /**
- * Dynamically generates and updates the list of buildings in the UI.
- * Handles enabling/disabling build buttons based on cost, unlocks, and limits.
+ * Creates the "Output" string for a building card, formatted as "Capacity: X Resource/sec (Production)".
+ * @param {object} building - The building object from buildingTypes.
+ * @returns {string} The formatted output string.
  */
-function updateBuildingList() {
-    const buildingListDiv = document.getElementById('building-list');
-    if (!buildingListDiv) return; // Element not found, exit
-    buildingListDiv.innerHTML = ''; // Clear existing items
+function getBuildingOutputString(building) {
+    let outputParts = [];
+    if (building.produces) {
+        // CORRECTED CHECK: Ensure property exists and is not just implicitly 0.
+        if (building.produces.energy !== undefined && building.produces.energy !== 0) outputParts.push(`${formatNumber(building.produces.energy, 2)} Energy/sec`);
+        if (building.produces.material !== undefined && building.produces.material !== 0) outputParts.push(`${formatNumber(building.produces.material, 2)} Material/sec`);
+        if (building.produces.credits !== undefined && building.produces.credits !== 0) outputParts.push(`${formatNumber(building.produces.credits, 2)} Credits/sec`);
+        if (building.produces.researchData !== undefined && building.produces.researchData !== 0) outputParts.push(`${formatNumber(building.produces.researchData, 2)} RData/sec`);
+    }
+    
+    // If it's a harvester and its primary production is energy (even if other 'produces' are zero or undefined)
+    if (building.type === 'harvester' && building.production && building.production.energy !== undefined && building.production.energy !== 0 && outputParts.length === 0) {
+        outputParts.push(`${formatNumber(building.production.energy, 2)} Energy/sec`);
+    }
 
-    // Ensure buildingTypes is available
+
+    if (outputParts.length > 0) {
+        return `Capacity: ${outputParts.join(', ')} (Production)`;
+    }
+    return 'Output: None or Passive Effect'; // More accurate fallback
+}
+
+
+/**
+ * Updates the list of buildings displayed in the UI for the active category.
+ * @param {HTMLElement} container - The HTML element to render the list into.
+ */
+function updateBuildingList(container) {
+    container.innerHTML = ''; 
     if (typeof buildingTypes === 'undefined') {
-        console.error("updateBuildingList: buildingTypes is not defined.");
-        buildingListDiv.innerHTML = '<p>Error: Building data not loaded.</p>';
+        container.innerHTML = '<p>Error: Construction data not loaded.</p>';
         return;
     }
     let hasVisibleBuildings = false;
-
     for (const id in buildingTypes) {
         const building = buildingTypes[id];
-        const isUnlocked = !building.unlockedByScience || gameData.unlockedScience[building.unlockedByScience];
+        if (building.category !== 'construction') continue;
 
-        // Only display if unlocked, or if already owned (even if lock conditions change later)
-        if (!isUnlocked && !(gameData.ownedBuildings[id] > 0)) {
-            continue;
-        }
+        const isUnlocked = !building.unlockedByScience || gameData.unlockedScience[building.unlockedByScience];
+        if (!isUnlocked && !(gameData.ownedBuildings[id] > 0)) continue;
         hasVisibleBuildings = true;
 
-        const adjustedCost = (typeof getAdjustedBuildingCost === 'function')
-            ? getAdjustedBuildingCost(id)
-            : building.cost;
-
+        const adjustedCost = (typeof getAdjustedBuildingCost === 'function') ? getAdjustedBuildingCost(id) : building.cost;
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('building-item');
-        if (!isUnlocked) itemDiv.style.opacity = "0.6"; // Visually indicate if somehow shown but not truly "active"
-
+        
         let costString = `Cost: `;
         if (adjustedCost) {
             if(adjustedCost.energy > 0) costString += `${formatNumber(adjustedCost.energy,0)}E `;
             if(adjustedCost.material > 0) costString += `${formatNumber(adjustedCost.material,0)}M `;
             if(adjustedCost.credits > 0) costString += `${formatNumber(adjustedCost.credits,0)}C`;
             if (costString === `Cost: ` && (adjustedCost.energy === 0 || adjustedCost.material === 0 || adjustedCost.credits === 0)) costString = 'Cost: Free';
-        } else {
-            costString = 'Cost: N/A';
-        }
+        } else { costString = 'Cost: N/A'; }
 
-        let productionString = 'Produces: ';
-        if(building.produces) {
-            if(building.produces.energy) productionString += `${formatNumber(building.produces.energy,2)}E/s `;
-            if(building.produces.material) productionString += `${formatNumber(building.produces.material,2)}M/s `;
-            if(building.produces.credits) productionString += `${formatNumber(building.produces.credits,2)}C/s `;
-            if(building.produces.researchData) productionString += `${formatNumber(building.produces.researchData,2)}RData/s `;
-        }
-        if (productionString === 'Produces: ') productionString = building.type === 'harvester' && building.production.energy ? '' : 'No direct production output.';
-
+        const outputString = getBuildingOutputString(building); 
 
         let upkeepString = 'Requires: ';
         if(building.consumes && building.consumes.energy > 0) {
@@ -245,54 +176,42 @@ function updateBuildingList() {
         }
         if (upkeepString === 'Requires: ') upkeepString = 'No operational requirements.';
 
-
         itemDiv.innerHTML = `
             <h3>${building.name} (Owned: ${formatNumber(gameData.ownedBuildings[id] || 0, 0)}${building.maxOwned ? '/' + building.maxOwned : ''})</h3>
             <p>${building.description}</p>
             <p class="cost-line">${costString}</p>
-            <p>${productionString}</p>
+            <p>${outputString}</p> 
             <p>${upkeepString}</p>
             <button id="buy-${id}" class="build-button">Construct</button>
         `;
-        buildingListDiv.appendChild(itemDiv);
-
+        container.appendChild(itemDiv);
         const button = document.getElementById(`buy-${id}`);
         if (button) {
-            // CRITICAL: Ensure buyBuilding is globally available from buildings.js
             button.onclick = () => {
-                if (typeof buyBuilding === 'function') {
-                    buyBuilding(id);
-                } else {
-                    console.error("buyBuilding function is not defined when button clicked!");
-                    alert("Error: Build function unavailable. Check console.");
-                }
+                if (typeof buyBuilding === 'function') buyBuilding(id);
+                else console.error("buyBuilding function is not defined!");
             };
             button.disabled = !isUnlocked || !canAffordBuildingWithAdjustedCost(id) || (building.maxOwned && (gameData.ownedBuildings[id] || 0) >= building.maxOwned);
         }
     }
     if (!hasVisibleBuildings) {
-        buildingListDiv.innerHTML = '<p>No facilities online or constructible with current knowledge.</p>';
+        container.innerHTML = '<p>No facilities online or constructible with current knowledge in this category.</p>';
     }
 }
 
 /**
- * Dynamically generates and updates the list of research items in the UI.
+ * Updates the list of research items displayed in the UI.
+ * @param {HTMLElement} container - The HTML element to render the list into.
  */
-function updateScienceList() {
-    const scienceListDiv = document.getElementById('science-list');
-    if (!scienceListDiv) return;
-    scienceListDiv.innerHTML = '';
-
+function updateScienceList(container) {
+    container.innerHTML = ''; 
     if (typeof scienceTree === 'undefined') {
-        console.error("updateScienceList: scienceTree is not defined.");
-        scienceListDiv.innerHTML = '<p>Error: Research data not loaded.</p>';
+        container.innerHTML = '<p>Error: Research data not loaded.</p>';
         return;
     }
     let hasVisibleScience = false;
-
     const sortedScienceIds = Object.keys(scienceTree).sort((a, b) => {
-        const techA = scienceTree[a];
-        const techB = scienceTree[b];
+        const techA = scienceTree[a]; const techB = scienceTree[b];
         if ((techA.tier || 0) < (techB.tier || 0)) return -1;
         if ((techA.tier || 0) > (techB.tier || 0)) return 1;
         return techA.name.localeCompare(techB.name);
@@ -303,10 +222,8 @@ function updateScienceList() {
         const tech = scienceTree[id];
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('science-item');
-        if (gameData.unlockedScience[id]) {
-            itemDiv.classList.add('is-unlocked'); // For CSS styling
-        }
-
+        if (gameData.unlockedScience[id]) itemDiv.classList.add('is-unlocked');
+        
         let costString = `Cost: `;
         if(tech.cost.researchData > 0) costString += `${formatNumber(tech.cost.researchData,0)}RData `;
         if(tech.cost.energy > 0) costString += `${formatNumber(tech.cost.energy,0)}E `;
@@ -324,7 +241,7 @@ function updateScienceList() {
         } else {
             prereqString += 'None';
         }
-
+        
         itemDiv.innerHTML = `
             <h3>${tech.name}</h3>
             <p>${tech.description}</p>
@@ -334,28 +251,19 @@ function updateScienceList() {
                 ${gameData.unlockedScience[id] ? 'Researched' : 'Initiate Research'}
             </button>
         `;
-        scienceListDiv.appendChild(itemDiv);
-
+        container.appendChild(itemDiv);
         const button = document.getElementById(`research-${id}`);
         if (button) {
-            if (gameData.unlockedScience[id]) {
-                button.disabled = true;
-            } else {
+            if (gameData.unlockedScience[id]) button.disabled = true;
+            else {
                 button.onclick = () => {
-                    if (typeof researchTech === 'function') {
-                        researchTech(id);
-                    } else {
-                        console.error("researchTech function is not defined when button clicked!");
-                        alert("Error: Research function unavailable. Check console.");
-                    }
+                    if (typeof researchTech === 'function') researchTech(id);
+                    else console.error("researchTech function is not defined!");
                 };
                 let canResearch = (typeof canAffordScience === 'function') ? canAffordScience(id) : false;
                 if (tech.prerequisites) {
                     for (const prereqId of tech.prerequisites) {
-                        if (!gameData.unlockedScience[prereqId]) {
-                            canResearch = false;
-                            break;
-                        }
+                        if (!gameData.unlockedScience[prereqId]) { canResearch = false; break; }
                     }
                 }
                 button.disabled = !canResearch;
@@ -363,7 +271,118 @@ function updateScienceList() {
         }
     }
     if (!hasVisibleScience) {
-        scienceListDiv.innerHTML = '<p>No research projects available or defined.</p>';
+        container.innerHTML = '<p>No research projects available or defined.</p>';
+    }
+}
+
+/**
+ * Updates the Banking & Finance category with relevant buildings/actions.
+ * @param {HTMLElement} container - The HTML element to render into.
+ */
+function updateBankingList(container) {
+    container.innerHTML = ''; 
+    if (typeof buildingTypes === 'undefined') {
+        container.innerHTML = '<p>Error: Banking data not loaded.</p>';
+        return;
+    }
+    let hasVisibleBankingItems = false;
+    for (const id in buildingTypes) {
+        const building = buildingTypes[id];
+        if (building.category !== 'banking') continue; 
+
+        const isUnlocked = !building.unlockedByScience || gameData.unlockedScience[building.unlockedByScience];
+        if (!isUnlocked && !(gameData.ownedBuildings[id] > 0)) continue;
+        hasVisibleBankingItems = true;
+
+        const adjustedCost = (typeof getAdjustedBuildingCost === 'function') ? getAdjustedBuildingCost(id) : building.cost;
+        const itemDiv = document.createElement('div');
+        itemDiv.classList.add('building-item'); 
+        
+        let costString = `Cost: `;
+        if (adjustedCost) {
+            if(adjustedCost.energy > 0) costString += `${formatNumber(adjustedCost.energy,0)}E `;
+            if(adjustedCost.material > 0) costString += `${formatNumber(adjustedCost.material,0)}M `;
+            if(adjustedCost.credits > 0) costString += `${formatNumber(adjustedCost.credits,0)}C`;
+            if (costString === `Cost: ` && (adjustedCost.energy === 0 || adjustedCost.material === 0 || adjustedCost.credits === 0)) costString = 'Cost: Free';
+        } else { costString = 'Cost: N/A'; }
+
+        const outputString = getBuildingOutputString(building); 
+
+        let upkeepString = 'Requires: ';
+        if(building.consumes && building.consumes.energy > 0) {
+            upkeepString += `${formatNumber(building.consumes.energy,2)}E/s (to operate) `;
+        }
+        if(building.upkeep) {
+            if(building.upkeep.energy > 0) upkeepString += `${formatNumber(building.upkeep.energy,2)}E/s (maintenance) `;
+            if(building.upkeep.credits > 0) upkeepString += `${formatNumber(building.upkeep.credits,2)}C/s (maintenance) `;
+        }
+        if (upkeepString === 'Requires: ') upkeepString = 'No operational requirements.';
+
+        itemDiv.innerHTML = `
+            <h3>${building.name} (Owned: ${formatNumber(gameData.ownedBuildings[id] || 0, 0)}${building.maxOwned ? '/' + building.maxOwned : ''})</h3>
+            <p>${building.description}</p>
+            <p class="cost-line">${costString}</p>
+            <p>${outputString}</p>
+            <p>${upkeepString}</p>
+            <button id="buy-${id}" class="build-button">Activate System</button>
+        `;
+        container.appendChild(itemDiv);
+        const button = document.getElementById(`buy-${id}`);
+        if (button) {
+            button.onclick = () => {
+                if (typeof buyBuilding === 'function') buyBuilding(id); 
+                else console.error("buyBuilding function is not defined!");
+            };
+            button.disabled = !isUnlocked || !canAffordBuildingWithAdjustedCost(id) || (building.maxOwned && (gameData.ownedBuildings[id] || 0) >= building.maxOwned);
+        }
+    }
+    if (!hasVisibleBankingItems) {
+         container.innerHTML = '<p>Banking & Finance systems are under development or require further research.</p>';
+    }
+}
+
+
+/**
+ * Updates the category display area based on gameData.activeCategoryView.
+ */
+function updateCategoryDisplay() {
+    const categoryTitleElement = document.getElementById('categoryTitle');
+    const categoryListContainer = document.getElementById('categoryListContainer');
+    const navButtons = {
+        construction: document.getElementById('navButtonConstruction'),
+        research: document.getElementById('navButtonResearch'),
+        banking: document.getElementById('navButtonBanking')
+    };
+
+    if (!categoryTitleElement || !categoryListContainer) {
+        console.error("Category display elements not found!");
+        return;
+    }
+
+    for (const category in navButtons) {
+        if (navButtons[category]) {
+            navButtons[category].classList.toggle('active', gameData.activeCategoryView === category);
+        }
+    }
+    
+    categoryListContainer.innerHTML = ''; 
+
+    switch (gameData.activeCategoryView) {
+        case 'construction':
+            categoryTitleElement.textContent = 'Construction & Automation';
+            updateBuildingList(categoryListContainer);
+            break;
+        case 'research':
+            categoryTitleElement.textContent = 'Research & Development';
+            updateScienceList(categoryListContainer);
+            break;
+        case 'banking':
+            categoryTitleElement.textContent = 'Banking & Finance';
+            updateBankingList(categoryListContainer); 
+            break;
+        default:
+            categoryTitleElement.textContent = 'Select a Category';
+            categoryListContainer.innerHTML = '<p>Please select a category from above to view details.</p>';
     }
 }
 
@@ -373,8 +392,7 @@ function updateScienceList() {
 function updateAllUIDisplays() {
     updateResourceDisplay();
     updateInteractionArea();
-    updateBuildingList();
-    updateScienceList();
+    updateCategoryDisplay(); 
 }
 
 // Log to confirm script is loaded
