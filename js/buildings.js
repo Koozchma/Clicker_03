@@ -48,20 +48,16 @@ const buildingTypes = {
         name: 'Trade Depot',
         description: 'Facilitates larger scale trades, converting materials to credits.',
         cost: { material: 200, energy: 150, credits: 1000 },
-        production: {}, // Production handled by special behavior
-        upkeep: { energy: 5, credits: 10 }, // Upkeep for operations
+        // We will define its credit production rate here, and material consumption rate separately
+        production: { credits: 0 }, // Placeholder, will be calculated by special logic
+        consumes: { material: 2 }, // Material consumed per second per depot to generate credits
+        creditOutputPerMaterialConsumed: 3, // Generates 3 credits per material unit
+        upkeep: { energy: 5, credits: 10 },
         unlockedByScience: 'sci_commerce_1',
-        specialBehavior: function(buildingCount) { // Converts material to credits
-            const materialConsumedPerDepot = 2; // Consumes 2 material/sec
-            const creditsGeneratedPerMaterial = 3; // Generates 3 credits/material
-            const totalMaterialNeeded = materialConsumedPerDepot * buildingCount;
-
-            if (gameData.material >= totalMaterialNeeded) {
-                gameData.material -= totalMaterialNeeded; // Deduct material here
-                return (totalMaterialNeeded * creditsGeneratedPerMaterial);
-            }
-            return 0; // Not enough material
-        }
+        // 'specialBehavior' can now be simplified or used for more complex logic if needed,
+        // but basic conversion is handled by 'consumes' and 'production' rates.
+        // For this refactor, we'll remove the old specialBehavior for credit generation
+        // as the new 'consumes' field will drive it.
     },
 
     // Research Buildings
