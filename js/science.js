@@ -2,20 +2,21 @@
 
 // Defines all researchable technologies in the game.
 const scienceTree = {
-    // TIER 0 - FIRST RESEARCHABLE TECHNOLOGIES
-    // These become available once the player can produce some Research Data via the Basic Data Scribe.
+    // TIER 0 - THE VERY FIRST RESEARCHABLE TECHNOLOGY
     'sci_unlock_energy_harvesters': {
         id: 'sci_unlock_energy_harvesters',
-        name: 'Automated Energy Collection', // Renamed for clarity
-        description: 'Pioneer the techniques for constructing Micro-Siphon Relays, enabling automated passive Energy generation.',
+        name: 'Automated Energy Collection',
+        description: 'Pioneer the techniques for constructing Micro-Siphon Relays, enabling automated passive Energy generation. This is crucial for scaling operations beyond manual siphoning.',
         cost: { researchData: 5, energy: 75, material: 10 }, // Requires output from Basic Data Scribe & Basic Matter Assembler
         effects: function() {
             console.log("Automated Energy Collection researched. Micro-Siphon Relays are now constructible.");
         },
-        prerequisites: [], // No prior *research* needed, but implies RData generation exists
+        prerequisites: [], // NO PREREQUISITES - This is the first research available
         tier: 0,
     },
-    'sci_siphon_attunement_1': { // Early click upgrade
+
+    // TIER 0.5 - EARLY UPGRADES (Requires Automated Energy Collection to be researched first)
+    'sci_siphon_attunement_1': {
         id: 'sci_siphon_attunement_1',
         name: 'Siphon Attunement I',
         description: 'Refine manual energy siphoning techniques, increasing Energy gained per siphon operation by +1.',
@@ -25,36 +26,36 @@ const scienceTree = {
             gameData.clickPower = gameData.rawEnergyPerClick + (gameData.promotionLevel * gameData.promotionBaseBonus);
             console.log("Siphon Attunement I achieved. New base siphon strength: " + gameData.rawEnergyPerClick);
         },
-        prerequisites: [], // Can be an early independent research once RData is available
-        tier: 0, // Making it a Tier 0 option
+        prerequisites: ['sci_unlock_energy_harvesters'], // Requires the first energy tech
+        tier: 0,
     },
 
-    // TIER 1 - UNLOCKING ADVANCED CONVERTERS (Requires established RData flow)
-    'sci_unlock_advanced_material_converter': { // Changed ID for clarity
-        id: 'sci_unlock_advanced_material_converter', // Was: sci_advanced_material_conversion
+    // TIER 1 - UNLOCKING ADVANCED CONVERTERS (Requires established RData flow & automated energy)
+    'sci_unlock_advanced_material_converter': {
+        id: 'sci_unlock_advanced_material_converter',
         name: 'Advanced Material Schematics',
         description: 'Develop blueprints for the Industrial Fabricator, a significantly more efficient Material Converter.',
         cost: { researchData: 20, energy: 150, material: 50 },
         effects: function() { /* Unlocks 'industrialFabricator' building */ },
-        prerequisites: ['sci_unlock_energy_harvesters'], // Example: Requires stable energy first
+        prerequisites: ['sci_unlock_energy_harvesters'], // Requires stable energy first
         tier: 1,
     },
-    'sci_unlock_advanced_research_converter': { // Changed ID for clarity
-        id: 'sci_unlock_advanced_research_converter', // Was: sci_unlock_advanced_research_converters
+    'sci_unlock_advanced_research_converter': {
+        id: 'sci_unlock_advanced_research_converter',
         name: 'Enhanced Emulation Protocols',
         description: 'Unlock the Advanced Data Emulator for a substantial boost in Research Data generation.',
         cost: { researchData: 25, energy: 120, material: 30 },
         effects: function() { /* Unlocks 'dataStreamEmulator' (which is the advanced one) */ },
-        prerequisites: ['sci_unlock_energy_harvesters'], // Example: Requires stable energy first
+        prerequisites: ['sci_unlock_energy_harvesters'], // Requires stable energy first
         tier: 1,
     },
-    'sci_unlock_advanced_banking_converter': { // Changed ID for clarity
-        id: 'sci_unlock_advanced_banking_converter', // Was: sci_unlock_advanced_banking_converters
+    'sci_unlock_advanced_banking_converter': {
+        id: 'sci_unlock_advanced_banking_converter',
         name: 'Sophisticated Value Synthesis',
         description: 'Unlock the Advanced Value Refinery for more efficient and robust Credit synthesis.',
         cost: { researchData: 30, energy: 180, material: 40 },
         effects: function() { /* Unlocks 'valueRefinery' (which is the advanced one) */ },
-        prerequisites: ['sci_unlock_energy_harvesters'], // Example: Requires stable energy first
+        prerequisites: ['sci_unlock_energy_harvesters'], // Requires stable energy first
         tier: 1,
     },
     'sci_stellar_harnessing': { // Advanced Energy Harvester
@@ -67,6 +68,7 @@ const scienceTree = {
         tier: 1,
     },
     // Add more research items for upgrades, new tiers, passive bonuses etc.
+    // Ensure they have appropriate prerequisites to create a logical progression.
 };
 
 /**
@@ -106,6 +108,7 @@ function researchTech(scienceId) {
         return false; // Already researched
     }
 
+    // Check prerequisites
     if (tech.prerequisites && tech.prerequisites.length > 0) {
         for (const prereqId of tech.prerequisites) {
             if (!gameData.unlockedScience[prereqId]) {
@@ -121,11 +124,13 @@ function researchTech(scienceId) {
         return false;
     }
 
+    // Deduct costs
     gameData.researchData -= (tech.cost.researchData || 0);
     gameData.currentEnergy -= (tech.cost.energy || 0);
     gameData.material -= (tech.cost.material || 0);
     gameData.credits -= (tech.cost.credits || 0);
 
+    // Mark as unlocked and apply effects
     gameData.unlockedScience[scienceId] = true;
     if (tech.effects && typeof tech.effects === 'function') {
         tech.effects();
