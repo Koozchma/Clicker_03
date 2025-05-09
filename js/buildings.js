@@ -2,7 +2,7 @@
 
 // Defines all building types (Harvesters and Converters) in the game.
 const buildingTypes = {
-    // --- DEFAULT STARTER CONVERTERS (Energy Cost Only) ---
+    // --- DEFAULT STARTER CONVERTERS (Energy Cost Only, Same Base Stats) ---
     'basicMatterAssembler': { // For Construction & Automation
         id: 'basicMatterAssembler',
         name: 'Basic Matter Assembler',
@@ -22,9 +22,9 @@ const buildingTypes = {
         id: 'basicDataScribe',
         name: 'Basic Data Scribe',
         description: 'An elementary device that translates raw Energy fluctuations into fundamental Research Data points, initiating scientific understanding.',
-        cost: { material: 0, credits: 0, energy: 40 }, // Same energy cost as Assembler
+        cost: { material: 0, credits: 0, energy: 40 }, // Same energy cost
         consumes: { energy: 0.25 },      // Same energy consumption
-        produces: { researchData: 0.05 },// Capacity: 0.05 Research Data/sec (can be adjusted)
+        produces: { researchData: 0.05 },// Capacity: 0.05 Research Data/sec (balanced for early game)
         upkeep: {},
         unlockedByScience: null,        // AVAILABLE BY DEFAULT
         type: 'converter',
@@ -39,7 +39,7 @@ const buildingTypes = {
         description: 'A simple synthesizer that refines ambient Energy signatures into a rudimentary form of Credits, establishing basic economic potential.',
         cost: { material: 0, credits: 0, energy: 40 }, // Same energy cost
         consumes: { energy: 0.25 },      // Same energy consumption
-        produces: { credits: 0.02 },    // Capacity: 0.02 Credits/sec (credits start slower)
+        produces: { credits: 0.02 },    // Capacity: 0.02 Credits/sec (credits are valuable, start slow)
         upkeep: {},
         unlockedByScience: null,        // AVAILABLE BY DEFAULT
         type: 'converter',
@@ -93,15 +93,15 @@ const buildingTypes = {
     },
 
     // ADVANCED RESEARCH CONVERTER (Research & Development)
-    'dataStreamEmulator': {
+    'dataStreamEmulator': { // This was the previous T1, now it's the "advanced" one
         id: 'dataStreamEmulator',
-        name: 'Data Stream Emulator',
-        description: 'A Tier 1 Research converter. Channels Energy to emulate universal principles, generating vital Research Data at a higher rate.',
+        name: 'Advanced Data Emulator', // Renamed for clarity
+        description: 'A more sophisticated Research converter. Channels Energy to emulate universal principles, generating vital Research Data at a higher rate.',
         cost: { material: 75, energy: 100 },
         consumes: { energy: 0.8 },
         produces: { researchData: 0.3 },
         upkeep: {},
-        unlockedByScience: 'sci_unlock_advanced_research_converters', // Example: new specific research
+        unlockedByScience: 'sci_unlock_advanced_research_converters', // Requires specific research
         type: 'converter',
         outputResource: 'researchData',
         inputResource: 'energy',
@@ -109,15 +109,15 @@ const buildingTypes = {
     },
 
     // ADVANCED CREDIT CONVERTER (Banking & Finance)
-    'valueRefinery': {
+    'valueRefinery': { // This was the previous T1, now it's the "advanced" one
         id: 'valueRefinery',
-        name: 'Value Refinery',
-        description: 'A Tier 1 Credit synthesizer. Refines Energy into stable Credit units for economic operations.',
+        name: 'Advanced Value Refinery', // Renamed for clarity
+        description: 'A more efficient Credit synthesizer. Refines Energy into stable Credit units for complex economic operations.',
         cost: { material: 100, energy: 150 },
         consumes: { energy: 1.0 },
         produces: { credits: 0.5 },
         upkeep: {},
-        unlockedByScience: 'sci_unlock_advanced_banking_converters', // Example: new specific research
+        unlockedByScience: 'sci_unlock_advanced_banking_converters', // Requires specific research
         type: 'converter',
         outputResource: 'credits',
         inputResource: 'energy',
