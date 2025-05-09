@@ -74,29 +74,26 @@
                 <button id="manualConvertMaterialButton" class="manual-action-button">Coalesce Material (10E → 1M)</button>
                 <button id="manualConvertResearchButton" class="manual-action-button">Emulate Data (15E → 1RData)</button>
             </section>
-        </div> <div class="game-sections-wrapper">
-            <section id="buildings-automation-display">
-                <h2>Construction & Automation</h2>
-                <div id="building-list">
-                    <p>No facilities online or constructible with current knowledge.</p>
-                </div>
-            </section>
+        </div> <nav class="category-navigation">
+            <button id="navButtonConstruction" class="category-nav-button" data-category="construction">Construction & Automation</button>
+            <button id="navButtonResearch" class="category-nav-button" data-category="research">Research & Development</button>
+            <button id="navButtonBanking" class="category-nav-button" data-category="banking">Banking & Finance</button>
+        </nav>
 
-            <section id="science-tree-display">
-                <h2>Research & Development</h2>
-                <div id="science-list">
-                    <p>No research projects available or defined.</p>
-                </div>
-            </section>
-        </div> <footer>
-            <p>Aethel Interface v0.3 | Status: Awakening</p>
+        <section id="category-content-area">
+            <h2 id="categoryTitle">Select a Category Above</h2>
+            <div id="categoryListContainer">
+                <p>Details for the selected category will appear here.</p>
+            </div>
+        </section>
+
+        <footer>
+            <p>Aethel Interface v0.4 | System View Active</p>
         </footer>
     </div>
 
     <script src="js/gameData.js"></script>
-    <script src="js/buildings.js"></script>
-    <script src="js/science.js"></script>
-    <script src="js/uiUpdates.js"></script>
+    <script src="js/buildings.js"></script> <script src="js/science.js"></script>   <script src="js/uiUpdates.js"></script>
     <script src="js/eventHandlers.js"></script>
     <script src="js/main.js"></script>
 </body>
