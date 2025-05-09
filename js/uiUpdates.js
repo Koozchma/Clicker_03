@@ -39,58 +39,64 @@ function formatNumber(num, decimals = 2) {
     return sign + fixedScaledNum + suffix;
 }
 
-
 function updateResourceDisplay() {
     // --- ENERGY ---
     const currentEnergyVal = Number(gameData.currentEnergy) || 0;
-    document.getElementById('currentEnergy').textContent = formatNumber(currentEnergyVal, 2); // Display current energy with up to 2 decimals
+    document.getElementById('currentEnergy').textContent = formatNumber(currentEnergyVal, 2);
 
-    const energyProdVault = Number(gameData.productionRates.energyFromVault) || 0;
-    const energyProdBuildings = Number(gameData.productionRates.energyFromBuildings) || 0;
-    const energyUpkeepTotal = Number(gameData.upkeepRates.energy) || 0;
+    const energyProdSiphon = Number(gameData.productionRates.energyFromAmbientSiphon) || 0;
+    const energyProdHarvesters = Number(gameData.productionRates.energyFromHarvesters) || 0;
+    const energyUpkeepConverters = Number(gameData.upkeepRates.energyForConverters) || 0; // This is DEMAND
+    const energyUpkeepSystems = Number(gameData.upkeepRates.energyForOtherSystems) || 0;
 
-    const totalGrossEnergyProduction = energyProdVault + energyProdBuildings;
-    const netEnergyChangePerSecond = totalGrossEnergyProduction - energyUpkeepTotal;
+    const totalGrossEnergyProduction = energyProdSiphon + energyProdHarvesters;
+    // Actual energy consumed is nuanced by efficiency; for display, show potential upkeep
+    const totalPotentialEnergyUpkeep = energyUpkeepConverters + energyUpkeepSystems;
+    const netEnergyChangePerSecond = totalGrossEnergyProduction - totalPotentialEnergyUpkeep; // This is net if all ran at 100%
 
-    document.getElementById('energyNetChange').textContent = formatNumber(netEnergyChangePerSecond, 2);
+    document.getElementById('energyNetChange').textContent = formatNumber(netEnergyChangePerSecond, 2); // This will reflect potential if all demand is met
     document.getElementById('energyProductionRate').textContent = formatNumber(totalGrossEnergyProduction, 2);
-    document.getElementById('energyUpkeepRate').textContent = formatNumber(energyUpkeepTotal, 2);
+    document.getElementById('energyUpkeepRate').textContent = formatNumber(totalPotentialEnergyUpkeep, 2);
 
-    // --- CREDITS ---
+
+    // --- RESEARCH DATA --- (ensure IDs in HTML are updated: currentResearchData, etc.)
+    const currentResearchVal = Number(gameData.researchData) || 0;
+    document.getElementById('currentResearch').textContent = formatNumber(currentResearchVal, 2); // Assumes id="currentResearch" in HTML is for researchData now
+
+    const researchProdTotal = Number(gameData.productionRates.researchData) || 0;
+    const researchUpkeepTotal = Number(gameData.upkeepRates.research) || 0; // If research has direct upkeep
+    const netResearchChangePerSecond = researchProdTotal - researchUpkeepTotal;
+
+    document.getElementById('researchNetChange').textContent = formatNumber(netResearchChangePerSecond, 2);
+    document.getElementById('researchProductionRate').textContent = formatNumber(researchProdTotal, 2);
+    document.getElementById('researchUpkeepRate').textContent = formatNumber(researchUpkeepTotal, 2);
+
+    // ... (Credits and Material remain similar, ensure their production rates are correctly calculated from converters) ...
+    // Example for Credits
     const currentCreditsVal = Number(gameData.credits) || 0;
     document.getElementById('currentCredits').textContent = formatNumber(currentCreditsVal, 2);
 
     const creditsProdTotal = Number(gameData.productionRates.credits) || 0;
-    const creditsUpkeepTotal = Number(gameData.upkeepRates.credits) || 0;
+    const creditsUpkeepTotal = Number(gameData.upkeepRates.creditsForMaintenance) || 0; // Use the specific credit upkeep
     const netCreditsChangePerSecond = creditsProdTotal - creditsUpkeepTotal;
 
     document.getElementById('creditsNetChange').textContent = formatNumber(netCreditsChangePerSecond, 2);
     document.getElementById('creditsProductionRate').textContent = formatNumber(creditsProdTotal, 2);
     document.getElementById('creditsUpkeepRate').textContent = formatNumber(creditsUpkeepTotal, 2);
 
-    // --- MATERIAL ---
+    // Material
     const currentMaterialVal = Number(gameData.material) || 0;
     document.getElementById('currentMaterial').textContent = formatNumber(currentMaterialVal, 2);
 
     const materialProdTotal = Number(gameData.productionRates.material) || 0;
-    const materialUpkeepTotal = Number(gameData.upkeepRates.material) || 0;
+    const materialUpkeepTotal = 0; // Material doesn't typically have passive upkeep, it's consumed.
+                                   // This display line might need rethinking for material if it's purely converted.
+                                   // For now, if no direct upkeep, set to 0.
     const netMaterialChangePerSecond = materialProdTotal - materialUpkeepTotal;
 
     document.getElementById('materialNetChange').textContent = formatNumber(netMaterialChangePerSecond, 2);
     document.getElementById('materialProductionRate').textContent = formatNumber(materialProdTotal, 2);
     document.getElementById('materialUpkeepRate').textContent = formatNumber(materialUpkeepTotal, 2);
-
-    // --- RESEARCH ---
-    const currentResearchVal = Number(gameData.research) || 0;
-    document.getElementById('currentResearch').textContent = formatNumber(currentResearchVal, 2);
-
-    const researchProdTotal = Number(gameData.productionRates.research) || 0;
-    const researchUpkeepTotal = Number(gameData.upkeepRates.research) || 0;
-    const netResearchChangePerSecond = researchProdTotal - researchUpkeepTotal;
-
-    document.getElementById('researchNetChange').textContent = formatNumber(netResearchChangePerSecond, 2);
-    document.getElementById('researchProductionRate').textContent = formatNumber(researchProdTotal, 2);
-    document.getElementById('researchUpkeepRate').textContent = formatNumber(researchUpkeepTotal, 2);
 }
 
 function updateInteractionArea() {
